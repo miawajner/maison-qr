@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <meta name="theme-color" content="#0a0a0a" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  <title>Maison Noire</title>
+  <link rel="manifest" href="manifest.json" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    html, body { height: 100%; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0a0a0a; color: #f5f0e8; overscroll-behavior: none; }
+
+    /* ─── Layout ─── */
+    #app { display: flex; flex-direction: column; height: 100dvh; max-width: 480px; margin: 0 auto; background: #0a0a0a; }
+    .screen { display: none; flex-direction: column; flex: 1; overflow: hidden; }
+    .screen.active { display: flex; }
+
+    /* ─── Hero header ─── */
+    .hero { background: #0a0a0a; padding: 32px 20px 20px; text-align: center; flex-shrink: 0; }
+    .hero-eyebrow { font-size: 10px; letter-spacing: 3px; color: #555; text-transform: uppercase; margin-bottom: 6px; }
+    .hero-name { font-size: 26px; font-weight: 400; color: #f5f0e8; font-family: Georgia, serif; letter-spacing: 1px; }
+    .hero-sub { font-size: 11px; color: #555; margin-top: 4px; letter-spacing: 1px; }
+    .table-pill { display: inline-block; margin-top: 12px; background: #161616; color: #666; font-size: 11px; padding: 5px 16px; border-radius: 20px; letter-spacing: 1px; border: 0.5px solid #222; }
+
+    /* ─── Category tabs ─── */
+    .cat-strip { display: flex; border-bottom: 0.5px solid #1a1a1a; overflow-x: auto; scrollbar-width: none; flex-shrink: 0; background: #0a0a0a; }
+    .cat-strip::-webkit-scrollbar { display: none; }
+    .cat-tab { padding: 12px 18px; font-size: 11px; letter-spacing: 1.5px; color: #444; white-space: nowrap; cursor: pointer; border-bottom: 1.5px solid transparent; text-transform: uppercase; flex-shrink: 0; transition: color 0.15s; }
+    .cat-tab.active { color: #f5f0e8; border-bottom-color: #c9a96e; }
+
+    /* ─── Menu list ─── */
+    .menu-scroll { flex: 1; overflow-y: auto; background: #111; -webkit-overflow-scrolling: touch; }
+    .menu-item { display: flex; gap: 14px; padding: 16px 20px; border-bottom: 0.5px solid #1a1a1a; align-items: flex-start; }
+    .menu-item:last-child { border-bottom: none; }
+    .item-emoji { width: 52px; height: 52px; border-radius: 10px; background: #1a1a1a; display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; }
+    .item-info { flex: 1; min-width: 0; }
+    .item-name { font-size: 13px; font-weight: 500; color: #f5f0e8; line-height: 1.3; }
+    .item-desc { font-size: 11px; color: #555; margin-top: 3px; line-height: 1.5; }
+    .item-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; }
+    .item-price { font-size: 13px; color: #c9a96e; font-weight: 500; }
+    .add-btn { width: 28px; height: 28px; border-radius: 50%; border: 0.5px solid #333; background: transparent; font-size: 18px; line-height: 1; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #666; flex-shrink: 0; transition: all 0.15s; }
+    .add-btn.active { background: #c9a96e; border-color: #c9a96e; color: #fff; }
+
+    /* ─── Cart bar ─── */
+    .cart-bar { padding: 12px 20px 24px; background: #0a0a0a; border-top: 0.5px solid #1a1a1a; flex-shrink: 0; }
+    .cart-btn { width: 100%; padding: 14px 18px; border: none; border-radius: 12px; background: #1a1a1a; color: #555; font-size: 14px; font-weight: 500; letter-spacing: 0.3px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: all 0.2s; }
+    .cart-btn.ready { background: #f5f0e8; color: #0a0a0a; }
+    .cart-count { background: #c9a96e; color: #fff; width: 22px; height: 22px; border-radius: 50%; font-size: 12px; font-weight: 600; display: flex; align-items: center; justify-content: center; }
+    .cart-btn:not(.ready) .cart-count { background: #333; color: #666; }
+
+    /* ─── Dark section header ─── */
+    .sec-header { padding: 20px 20px 16px; background: #0a0a0a; border-bottom: 0.5px solid #1a1a1a; flex-shrink: 0; }
+    .sec-title { font-size: 18px; font-weight: 400; color: #f5f0e8; font-family: Georgia, serif; }
+    .sec-sub { font-size: 11px; color: #555; margin-top: 3px; letter-spacing: 0.5px; }
+
+    /* ─── Order review ─── */
+    .order-scroll { flex: 1; overflow-y: auto; background: #111; }
+    .order-row { display: flex; align-items: center; padding: 14px 20px; border-bottom: 0.5px solid #1a1a1a; gap: 12px; }
+    .order-name { flex: 1; font-size: 13px; color: #f5f0e8; }
+    .qty-ctrl { display: flex; align-items: center; gap: 10px; }
+    .qty-btn { width: 24px; height: 24px; border-radius: 50%; border: 0.5px solid #333; background: transparent; font-size: 15px; cursor: pointer; color: #888; display: flex; align-items: center; justify-content: center; }
+    .qty-num { font-size: 14px; font-weight: 500; min-width: 16px; text-align: center; color: #f5f0e8; }
+    .order-price { font-size: 13px; color: #c9a96e; min-width: 56px; text-align: right; }
+
+    /* ─── Totals ─── */
+    .totals { padding: 14px 20px; background: #0f0f0f; border-top: 0.5px solid #1a1a1a; flex-shrink: 0; }
+    .tot-row { display: flex; justify-content: space-between; font-size: 12px; color: #555; padding: 3px 0; }
+    .tot-row.main { font-size: 16px; color: #f5f0e8; padding-top: 10px; margin-top: 6px; border-top: 0.5px solid #222; }
+
+    /* ─── Split / Tip ─── */
+    .block { padding: 16px 20px; border-bottom: 0.5px solid #1a1a1a; background: #111; flex-shrink: 0; }
+    .block-label { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: #444; margin-bottom: 10px; }
+    .chips { display: flex; gap: 8px; }
+    .chip { flex: 1; padding: 9px 4px; border: 0.5px solid #222; border-radius: 8px; font-size: 13px; text-align: center; cursor: pointer; color: #555; background: #111; transition: all 0.12s; }
+    .chip.active { border-color: #c9a96e; color: #c9a96e; background: #1a1200; }
+    .my-part-row { display: flex; justify-content: space-between; font-size: 13px; color: #888; padding: 10px 12px; background: #0f0f0f; border-radius: 8px; margin-top: 10px; }
+    .my-part-row strong { color: #f5f0e8; }
+
+    /* ─── Grand total ─── */
+    .grand-total { margin: 16px 20px; padding: 14px 18px; background: #f5f0e8; border-radius: 12px; display: flex; justify-content: space-between; font-size: 16px; font-weight: 500; color: #0a0a0a; flex-shrink: 0; }
+
+    /* ─── Payment options ─── */
+    .pay-list { flex: 1; overflow-y: auto; padding: 16px 20px; background: #111; }
+    .pay-label { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: #444; margin-bottom: 14px; }
+    .pay-opt { width: 100%; padding: 14px 16px; border: 0.5px solid #222; border-radius: 12px; background: #161616; font-size: 13px; color: #f5f0e8; cursor: pointer; text-align: left; margin-bottom: 10px; display: flex; align-items: center; gap: 14px; transition: background 0.1s; }
+    .pay-opt:hover { background: #1f1f1f; }
+    .pay-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 600; flex-shrink: 0; }
+    .pay-note { margin-top: 16px; font-size: 11px; color: #333; text-align: center; letter-spacing: 0.3px; }
+
+    /* ─── Success ─── */
+    .success-body { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 28px; text-align: center; gap: 12px; background: #0a0a0a; }
+    .check-ring { width: 64px; height: 64px; border-radius: 50%; border: 1.5px solid #c9a96e; display: flex; align-items: center; justify-content: center; margin-bottom: 8px; }
+    .success-title { font-size: 24px; font-weight: 400; color: #f5f0e8; font-family: Georgia, serif; letter-spacing: 1px; }
+    .success-sub { font-size: 13px; color: #555; line-height: 1.7; }
+    .review-box { margin-top: 20px; padding: 16px; border: 0.5px solid #1f1f1f; border-radius: 12px; width: 100%; text-align: left; background: #111; }
+    .review-box-label { font-size: 11px; color: #444; margin-bottom: 8px; letter-spacing: 0.5px; }
+    .stars { font-size: 22px; letter-spacing: 4px; color: #c9a96e; }
+    .review-cta { margin-top: 12px; width: 100%; padding: 10px; border: 0.5px solid #2a2a2a; border-radius: 8px; background: transparent; font-size: 12px; color: #888; cursor: pointer; letter-spacing: 0.5px; }
+    .success-note { font-size: 11px; color: #333; letter-spacing: 0.5px; margin-top: 4px; }
+
+    /* ─── CTA bar ─── */
+    .cta-bar { padding: 12px 20px 28px; background: #0a0a0a; border-top: 0.5px solid #1a1a1a; flex-shrink: 0; }
+    .btn-primary { width: 100%; padding: 14px; border: none; border-radius: 12px; background: #f5f0e8; color: #0a0a0a; font-size: 14px; font-weight: 600; letter-spacing: 0.3px; cursor: pointer; transition: opacity 0.15s; }
+    .btn-primary:hover { opacity: 0.9; }
+    .btn-ghost { width: 100%; padding: 12px; border: 0.5px solid #222; border-radius: 12px; background: transparent; color: #555; font-size: 13px; cursor: pointer; margin-top: 8px; }
+
+    /* ─── Step dots ─── */
+    .dots { display: flex; gap: 6px; justify-content: center; padding: 10px 0 6px; flex-shrink: 0; background: #0a0a0a; }
+    .dot { width: 5px; height: 5px; border-radius: 50%; background: #222; transition: background 0.2s; }
+    .dot.active { background: #c9a96e; }
+  </style>
+</head>
+<body>
+<div id="app">
+
+  <!-- ══ SCREEN 1: MENU ══ -->
+  <div class="screen active" id="screen-menu">
+    <div class="hero">
+      <div class="hero-eyebrow">Bienvenido a</div>
+      <div class="hero-name" id="rest-name">Maison Noire</div>
+      <div class="hero-sub" id="rest-tagline">Contemporary cuisine · Montevideo</div>
+      <div class="table-pill" id="table-label">Table —</div>
+    </div>
+    <div class="cat-strip" id="cat-strip"></div>
+    <div class="menu-scroll" id="menu-list"></div>
+    <div class="cart-bar">
+      <button class="cart-btn" id="cart-btn" onclick="goTo('order')">
+        <span>Ver mi selección</span>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span id="cart-total-label" style="font-size:12px;"></span>
+          <div class="cart-count" id="cart-count">0</div>
+        </div>
+      </button>
+    </div>
+  </div>
+
+  <!-- ══ SCREEN 2: ORDER REVIEW ══ -->
+  <div class="screen" id="screen-order">
+    <div class="sec-header">
+      <div class="sec-title">Tu selección</div>
+      <div class="sec-sub" id="order-sub">Table — · Maison Noire</div>
+    </div>
+    <div class="order-scroll" id="order-list"></div>
+    <div class="totals">
+      <div class="tot-row"><span>Subtotal</span><span id="subtotal-val">—</span></div>
+      <div class="tot-row main"><span>Total</span><span id="total-val">—</span></div>
+    </div>
+    <div class="dots"><div class="dot active"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+    <div class="cta-bar">
+      <button class="btn-primary" onclick="goTo('split')">Confirmar pedido</button>
+      <button class="btn-ghost" onclick="goTo('menu')">Seguir eligiendo</button>
+    </div>
+  </div>
+
+  <!-- ══ SCREEN 3: SPLIT + TIP ══ -->
+  <div class="screen" id="screen-split">
+    <div class="sec-header">
+      <div class="sec-title">Maison Noire</div>
+      <div class="sec-sub" id="split-sub">Table —</div>
+    </div>
+    <div style="flex:1;overflow-y:auto;background:#111;">
+      <div class="block">
+        <div class="block-label">¿Cuántos pagan?</div>
+        <div class="chips" id="split-chips">
+          <div class="chip active" onclick="setSplit(this,1)">Solo yo</div>
+          <div class="chip" onclick="setSplit(this,2)">2</div>
+          <div class="chip" onclick="setSplit(this,3)">3</div>
+          <div class="chip" onclick="setSplit(this,4)">4</div>
+        </div>
+        <div class="my-part-row"><span>Tu parte</span><strong id="my-part">—</strong></div>
+      </div>
+      <div class="block">
+        <div class="block-label">Propina</div>
+        <div class="chips" id="tip-chips">
+          <div class="chip" onclick="setTip(this,0)">Sin propina</div>
+          <div class="chip active" onclick="setTip(this,10)">10%</div>
+          <div class="chip" onclick="setTip(this,15)">15%</div>
+          <div class="chip" onclick="setTip(this,20)">20%</div>
+        </div>
+      </div>
+    </div>
+    <div class="grand-total"><span>Pagás</span><span id="grand-val">—</span></div>
+    <div class="dots"><div class="dot"></div><div class="dot active"></div><div class="dot"></div><div class="dot"></div></div>
+    <div class="cta-bar">
+      <button class="btn-primary" onclick="goTo('pay')">Ir a pagar</button>
+    </div>
+  </div>
+
+  <!-- ══ SCREEN 4: PAYMENT ══ -->
+  <div class="screen" id="screen-pay">
+    <div class="sec-header">
+      <div class="sec-title">Maison Noire</div>
+      <div class="sec-sub" id="pay-sub">Pagás —</div>
+    </div>
+    <div class="pay-list">
+      <div class="pay-label">Método de pago</div>
+      <button class="pay-opt" onclick="processPay('apple')">
+        <div class="pay-icon" style="background:#000;color:#fff;font-size:16px;">⌘</div>
+        <span>Apple Pay</span>
+      </button>
+      <button class="pay-opt" onclick="processPay('google')">
+        <div class="pay-icon" style="background:#fff;color:#333;">G</div>
+        <span>Google Pay</span>
+      </button>
+      <button class="pay-opt" onclick="processPay('card')">
+        <div class="pay-icon" style="background:#1a2a4a;color:#6fa3ef;">▭</div>
+        <span>Tarjeta de crédito / débito</span>
+      </button>
+      <button class="pay-opt" onclick="processPay('mp')">
+        <div class="pay-icon" style="background:#fff0d6;color:#8a6830;font-size:10px;font-weight:700;">MP</div>
+        <span>Mercado Pago</span>
+      </button>
+      <div class="pay-note">Pago seguro · Sin datos guardados · Sin app requerida</div>
+    </div>
+    <div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot active"></div><div class="dot"></div></div>
+  </div>
+
+  <!-- ══ SCREEN 5: SUCCESS ══ -->
+  <div class="screen" id="screen-success">
+    <div class="success-body">
+      <div class="check-ring">
+        <svg width="26" height="26" viewBox="0 0 26 26" fill="none">
+          <path d="M5 13l5 5L21 8" stroke="#c9a96e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div class="success-title">Merci.</div>
+      <div class="success-sub">Tu pago fue procesado.<br>El recibo llegará por WhatsApp.<br>Podés irte cuando quieras.</div>
+      <div class="review-box">
+        <div class="review-box-label">¿Cómo estuvo tu experiencia?</div>
+        <div class="stars">★★★★★</div>
+        <button class="review-cta" id="review-btn" onclick="openReview()">Dejar reseña en Google →</button>
+      </div>
+      <div class="success-note">Sin app · Sin cuenta requerida</div>
+    </div>
+    <div class="dots" style="background:#0a0a0a;"><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot active"></div></div>
+    <div class="cta-bar">
+      <button class="btn-ghost" onclick="resetApp()">Reiniciar (demo)</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  // ─── State ───────────────────────────────────────────
+  var CONFIG = null;
+  var cart   = {};     // { itemId: { ...item, qty } }
+  var split  = 1;
+  var tip    = 10;
+
+  // ─── Helpers ─────────────────────────────────────────
+  function fmt(n) {
+    var sym = CONFIG ? CONFIG.restaurant.currency_symbol : '$';
+    return sym + Math.round(n).toLocaleString('es-UY');
+  }
+  function cartTotal() {
+    return Object.values(cart).reduce(function(s,i){ return s + i.price * i.qty; }, 0);
+  }
+  function cartCount() {
+    return Object.values(cart).reduce(function(s,i){ return s + i.qty; }, 0);
+  }
+
+  // ─── Load config from URL param or default ───────────
+  function getTableNum() {
+    var p = new URLSearchParams(window.location.search);
+    return p.get('table') || '—';
+  }
+
+  // ─── Boot ─────────────────────────────────────────────
+  fetch('data/menu.json')
+    .then(function(r){ return r.json(); })
+    .then(function(data){
+      CONFIG = data;
+      var r = data.restaurant;
+      document.title = r.name;
+      document.getElementById('rest-name').textContent    = r.name;
+      document.getElementById('rest-tagline').textContent = r.tagline;
+      document.getElementById('table-label').textContent  = 'Table ' + getTableNum();
+      document.getElementById('order-sub').textContent    = 'Table ' + getTableNum() + ' · ' + r.name;
+      document.getElementById('review-btn').onclick = openReview;
+      buildCats(data.categories);
+      renderMenu(data.categories[0].id);
+    });
+
+  // ─── Category tabs ────────────────────────────────────
+  function buildCats(cats) {
+    var strip = document.getElementById('cat-strip');
+    strip.innerHTML = '';
+    cats.forEach(function(c, i){
+      var tab = document.createElement('div');
+      tab.className = 'cat-tab' + (i === 0 ? ' active' : '');
+      tab.textContent = c.label;
+      tab.onclick = function(){
+        document.querySelectorAll('.cat-tab').forEach(function(t){ t.classList.remove('active'); });
+        tab.classList.add('active');
+        renderMenu(c.id);
+      };
+      strip.appendChild(tab);
+    });
+  }
+
+  // ─── Menu render ─────────────────────────────────────
+  function renderMenu(catId) {
+    var list = document.getElementById('menu-list');
+    list.innerHTML = '';
+    CONFIG.items.filter(function(i){ return i.category === catId; }).forEach(function(item){
+      var inCart = cart[item.id] && cart[item.id].qty > 0;
+      var div = document.createElement('div');
+      div.className = 'menu-item';
+      div.innerHTML =
+        '<div class="item-emoji">' + item.emoji + '</div>' +
+        '<div class="item-info">' +
+          '<div class="item-name">'  + item.name + '</div>' +
+          '<div class="item-desc">'  + item.desc + '</div>' +
+          '<div class="item-footer">' +
+            '<div class="item-price">' + fmt(item.price) + '</div>' +
+            '<button class="add-btn' + (inCart ? ' active' : '') + '" data-id="' + item.id + '">' +
+              (inCart ? '✓' : '+') +
+            '</button>' +
+          '</div>' +
+        '</div>';
+      div.querySelector('.add-btn').addEventListener('click', function(){
+        var id = this.dataset.id;
+        var itm = CONFIG.items.find(function(x){ return x.id === id; });
+        if (!cart[id]) cart[id] = Object.assign({}, itm, { qty: 0 });
+        if (cart[id].qty === 0) { cart[id].qty = 1; this.classList.add('active'); this.textContent = '✓'; }
+        else                    { cart[id].qty = 0; this.classList.remove('active'); this.textContent = '+'; }
+        updateCartBar();
+      });
+      list.appendChild(div);
+    });
+  }
+
+  function updateCartBar() {
+    var count = cartCount();
+    var btn   = document.getElementById('cart-btn');
+    var lbl   = document.getElementById('cart-total-label');
+    document.getElementById('cart-count').textContent = count;
+    if (count > 0) {
+      btn.classList.add('ready');
+      lbl.textContent = fmt(cartTotal());
+      lbl.style.color = '#0a0a0a';
+    } else {
+      btn.classList.remove('ready');
+      lbl.textContent = '';
+    }
+  }
+
+  // ─── Order review ─────────────────────────────────────
+  function renderOrder() {
+    var list  = document.getElementById('order-list');
+    var total = cartTotal();
+    list.innerHTML = '';
+    Object.values(cart).filter(function(i){ return i.qty > 0; }).forEach(function(item){
+      var div = document.createElement('div');
+      div.className = 'order-row';
+      div.innerHTML =
+        '<div class="order-name">' + item.name + '</div>' +
+        '<div class="qty-ctrl">' +
+          '<button class="qty-btn" data-id="' + item.id + '" data-d="-1">−</button>' +
+          '<span class="qty-num">' + item.qty + '</span>' +
+          '<button class="qty-btn" data-id="' + item.id + '" data-d="1">+</button>' +
+        '</div>' +
+        '<div class="order-price">' + fmt(item.price * item.qty) + '</div>';
+      div.querySelectorAll('.qty-btn').forEach(function(b){
+        b.addEventListener('click', function(){
+          var id  = this.dataset.id;
+          var dir = parseInt(this.dataset.d);
+          cart[id].qty = Math.max(0, cart[id].qty + dir);
+          renderOrder(); updateCartBar();
+        });
+      });
+      list.appendChild(div);
+    });
+    document.getElementById('subtotal-val').textContent = fmt(total);
+    document.getElementById('total-val').textContent    = fmt(total);
+  }
+
+  // ─── Split / Tip ──────────────────────────────────────
+  function updateSplitScreen() {
+    var total = cartTotal();
+    var r     = CONFIG.restaurant;
+    document.getElementById('split-sub').textContent = 'Table ' + getTableNum() + ' · ' + fmt(total) + ' total';
+    refreshAmounts();
+  }
+  function refreshAmounts() {
+    var total = cartTotal();
+    var part  = Math.round(total / split);
+    var grand = Math.round(part * (1 + tip / 100));
+    document.getElementById('my-part').textContent  = fmt(part);
+    document.getElementById('grand-val').textContent = fmt(grand);
+    document.getElementById('pay-sub').textContent  = 'Pagás ' + fmt(grand);
+  }
+  function setSplit(el, n) {
+    split = n;
+    document.querySelectorAll('#split-chips .chip').forEach(function(c){ c.classList.remove('active'); });
+    el.classList.add('active');
+    refreshAmounts();
+  }
+  function setTip(el, pct) {
+    tip = pct;
+    document.querySelectorAll('#tip-chips .chip').forEach(function(c){ c.classList.remove('active'); });
+    el.classList.add('active');
+    refreshAmounts();
+  }
+
+  // ─── Payment ──────────────────────────────────────────
+  function processPay(method) {
+    // TODO: conectar con MercadoPago SDK
+    // Por ahora simula éxito
+    console.log('Procesando pago via', method);
+    goTo('success');
+  }
+
+  // ─── Google review ────────────────────────────────────
+  function openReview() {
+    var url = CONFIG ? CONFIG.restaurant.google_review_url : '#';
+    window.open(url, '_blank');
+  }
+
+  // ─── Navigation ───────────────────────────────────────
+  var screens = ['menu','order','split','pay','success'];
+  function goTo(name) {
+    if (name === 'order')  renderOrder();
+    if (name === 'split')  updateSplitScreen();
+    screens.forEach(function(s){
+      document.getElementById('screen-' + s).classList.toggle('active', s === name);
+    });
+    window.scrollTo(0,0);
+  }
+
+  // ─── Reset ────────────────────────────────────────────
+  function resetApp() {
+    cart  = {};
+    split = 1;
+    tip   = 10;
+    document.querySelectorAll('#split-chips .chip').forEach(function(c,i){ c.classList.toggle('active', i===0); });
+    document.querySelectorAll('#tip-chips  .chip').forEach(function(c,i){ c.classList.toggle('active', i===1); });
+    var cats = CONFIG ? CONFIG.categories : [];
+    if (cats.length) {
+      document.querySelectorAll('.cat-tab').forEach(function(t,i){ t.classList.toggle('active', i===0); });
+      renderMenu(cats[0].id);
+    }
+    updateCartBar();
+    goTo('menu');
+  }
+</script>
+</body>
+</html>
