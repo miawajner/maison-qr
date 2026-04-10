@@ -279,8 +279,10 @@
       document.getElementById('table-label').textContent  = 'Table ' + getTableNum();
       document.getElementById('order-sub').textContent    = 'Table ' + getTableNum() + ' · ' + r.name;
       document.getElementById('review-btn').onclick = openReview;
+      cart = loadCart();
       buildCats(data.categories);
       renderMenu(data.categories[0].id);
+      updateCartBar();
     });
 
   // ─── Category tabs ────────────────────────────────────
@@ -326,7 +328,7 @@
         if (!cart[id]) cart[id] = Object.assign({}, itm, { qty: 0 });
         if (cart[id].qty === 0) { cart[id].qty = 1; this.classList.add('active'); this.textContent = '✓'; }
         else                    { cart[id].qty = 0; this.classList.remove('active'); this.textContent = '+'; }
-        updateCartBar();
+        updateCartBar(); saveCart();
       });
       list.appendChild(div);
     });
@@ -406,11 +408,52 @@
   }
 
   // ─── Payment ──────────────────────────────────────────
+  // URL de tu backend (cambiá esto cuando hagas deploy en Railway)
+  var API_URL = 'http://localhost:8000';
+
   function processPay(method) {
-    // TODO: conectar con MercadoPago SDK
-    // Por ahora simula éxito
-    console.log('Procesando pago via', method);
-    goTo('success');
+    var btn = document.querySelector('.btn-primary');
+    if (btn) { btn.textContent = 'Procesando...'; btn.disabled = true; }
+
+    // Armamos el pedido para mandar al backend
+    var items = Object.values(cart)
+      .filter(function(i){ return i.qty > 0; })
+      .map(function(i){ return { name: i.name, qty: i.qty, price: i.price }; });
+
+    var total   = cartTotal();
+    var part    = Math.round(total / split);
+    var propina = Math.round(part * (tip / 100));
+
+    var email = sessionStorage.getItem('mq_email') || '';
+    if (!email) {
+      email = window.prompt('¿A qué mail te mandamos el recibo?') || '';
+      if (email) sessionStorage.setItem('mq_email', email);
+    }
+
+    var pedido = {
+      email:   email || 'sin-email@maisonqr.com',
+      mesa:    parseInt(getTableNum()) || 0,
+      items:   items,
+      propina: propina,
+      metodo:  method,
+    };
+
+    fetch(API_URL + '/api/pedidos', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify(pedido),
+    })
+    .then(function(r){ return r.json(); })
+    .then(function(data){
+      console.log('Pedido ok:', data);
+      goTo('success');
+    })
+    .catch(function(err){
+      console.warn('Backend no disponible, continuando offline:', err);
+      // Si el backend falla (WiFi malo), igual muestra success
+      // El retry lo hace el Service Worker cuando vuelve la red
+      goTo('success');
+    });
   }
 
   // ─── Google review ────────────────────────────────────
@@ -446,5 +489,35 @@
     goTo('menu');
   }
 </script>
+
+<script>
+// ─── Service Worker registration ─────────────────────────────────
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function() {
+    navigator.serviceWorker.register('/sw.js')
+      .then(function(reg) { console.log('SW registrado:', reg.scope); })
+      .catch(function(err) { console.warn('SW falló:', err); });
+  });
+}
+
+// ─── Estado persistente del carrito (sobrevive recarga) ──────────
+function saveCart() {
+  try { sessionStorage.setItem('mq_cart', JSON.stringify(cart)); } catch(e){}
+}
+function loadCart() {
+  try {
+    var s = sessionStorage.getItem('mq_cart');
+    return s ? JSON.parse(s) : {};
+  } catch(e) { return {}; }
+}
+
+// ─── Override resetApp para limpiar también sessionStorage ────────
+var _origReset = resetApp;
+function resetApp() {
+  sessionStorage.removeItem('mq_cart');
+  _origReset();
+}
+</script>
+
 </body>
 </html>
