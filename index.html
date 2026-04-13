@@ -5,9 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"/>
 <meta name="theme-color" content="#ffffff"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
-<meta name="apple-mobile-web-app-status-bar-style" content="default"/>
 <title>Maison Noire</title>
-<link rel="manifest" href="manifest.json"/>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#fff;color:#1a1a1a;overscroll-behavior:none}
@@ -33,11 +31,13 @@ html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sa
 .item-price{font-size:13px;font-weight:500;color:#1a1a1a}
 .add-btn{width:28px;height:28px;border-radius:50%;border:1px solid #e0e0e0;background:#fff;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#aaa;flex-shrink:0;transition:all .15s}
 .add-btn.on{background:#1a1a1a;border-color:#1a1a1a;color:#fff;font-size:14px}
-.cart-bar{padding:12px 24px 28px;border-top:1px solid #f0f0f0;flex-shrink:0}
+.cart-bar{padding:12px 24px 28px;border-top:1px solid #f0f0f0;flex-shrink:0;display:flex;flex-direction:column;gap:8px}
 .cart-btn{width:100%;padding:14px;border:none;border-radius:12px;background:#f0f0f0;color:#aaa;font-size:14px;font-weight:500;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:all .2s}
 .cart-btn.on{background:#1a1a1a;color:#fff}
 .cart-pill{background:#ddd;color:#aaa;width:22px;height:22px;border-radius:50%;font-size:11px;font-weight:600;display:flex;align-items:center;justify-content:center;transition:all .2s}
 .cart-btn.on .cart-pill{background:rgba(255,255,255,.2);color:#fff}
+.bill-btn{width:100%;padding:13px;border:1px solid #e0e0e0;border-radius:12px;background:#fff;color:#888;font-size:13px;cursor:pointer;transition:all .15s}
+.bill-btn:active{border-color:#1a1a1a;color:#1a1a1a}
 .sec-hdr{padding:20px 24px 16px;border-bottom:1px solid #f0f0f0;flex-shrink:0}
 .sec-title{font-size:18px;font-weight:400;color:#1a1a1a}
 .sec-sub{font-size:11px;color:#aaa;margin-top:3px;letter-spacing:.3px}
@@ -51,36 +51,26 @@ html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sa
 .totals{padding:16px 24px;border-top:1px solid #eee;flex-shrink:0;background:#fafafa}
 .tot-row{display:flex;justify-content:space-between;font-size:12px;color:#aaa;padding:3px 0}
 .tot-row.main{font-size:16px;color:#1a1a1a;padding-top:10px;margin-top:6px;border-top:1px solid #eee}
-.blk{padding:18px 24px;border-bottom:1px solid #f7f7f7;flex-shrink:0}
-.blk-label{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#bbb;margin-bottom:10px}
-.chips{display:flex;gap:8px}
-.chip{flex:1;padding:9px 4px;border:1px solid #e8e8e8;border-radius:8px;font-size:13px;text-align:center;cursor:pointer;color:#aaa;background:#fff;transition:all .12s}
-.chip.on{border-color:#1a1a1a;color:#1a1a1a;font-weight:500}
-.my-part{display:flex;justify-content:space-between;font-size:13px;color:#888;padding:10px 12px;background:#f8f8f8;border-radius:8px;margin-top:10px}
-.my-part strong{color:#1a1a1a}
-.grand{margin:16px 24px;padding:14px 18px;background:#1a1a1a;border-radius:12px;display:flex;justify-content:space-between;font-size:16px;font-weight:500;color:#fff;flex-shrink:0}
-.pay-list{flex:1;overflow-y:auto;padding:18px 24px}
-.pay-label{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#bbb;margin-bottom:14px}
-.pay-opt{width:100%;padding:14px 16px;border:1px solid #eee;border-radius:12px;background:#fff;font-size:13px;color:#1a1a1a;cursor:pointer;text-align:left;margin-bottom:10px;display:flex;align-items:center;gap:14px;transition:background .1s}
-.pay-opt:active{background:#f8f8f8}
-.pay-ico{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;flex-shrink:0}
-.pay-note{margin-top:12px;font-size:11px;color:#ccc;text-align:center;letter-spacing:.3px}
-.success{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 28px;text-align:center;gap:10px}
-.check-ring{width:60px;height:60px;border-radius:50%;border:1.5px solid #1a1a1a;display:flex;align-items:center;justify-content:center;margin-bottom:8px}
-.s-title{font-size:22px;font-weight:400;color:#1a1a1a;letter-spacing:.5px}
-.s-sub{font-size:13px;color:#aaa;line-height:1.7}
-.review-box{margin-top:20px;padding:16px;border:1px solid #f0f0f0;border-radius:12px;width:100%;text-align:left}
-.review-lbl{font-size:11px;color:#bbb;margin-bottom:8px;letter-spacing:.3px}
-.stars{font-size:22px;letter-spacing:3px;color:#d4a853}
-.review-cta{margin-top:12px;width:100%;padding:10px;border:1px solid #eee;border-radius:8px;background:#fff;font-size:12px;color:#888;cursor:pointer;letter-spacing:.3px}
 .cta-bar{padding:12px 24px 28px;border-top:1px solid #f0f0f0;flex-shrink:0}
 .btn-main{width:100%;padding:14px;border:none;border-radius:12px;background:#1a1a1a;color:#fff;font-size:14px;font-weight:500;cursor:pointer}
 .btn-ghost{width:100%;padding:12px;border:1px solid #eee;border-radius:12px;background:#fff;color:#aaa;font-size:13px;cursor:pointer;margin-top:8px}
+.bill-screen{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:36px 28px;text-align:center;gap:10px}
+.bell-ring{width:68px;height:68px;border-radius:50%;border:1.5px solid #1a1a1a;display:flex;align-items:center;justify-content:center;margin-bottom:6px;animation:wiggle .5s ease}
+@keyframes wiggle{0%,100%{transform:rotate(0)}20%{transform:rotate(-10deg)}40%{transform:rotate(10deg)}60%{transform:rotate(-6deg)}80%{transform:rotate(6deg)}}
+.bill-title{font-size:22px;font-weight:400;color:#1a1a1a;letter-spacing:.3px}
+.bill-sub{font-size:13px;color:#aaa;line-height:1.7}
+.account-box{margin-top:16px;padding:16px;border:1px solid #f0f0f0;border-radius:12px;width:100%;text-align:left}
+.acc-label{font-size:10px;color:#ccc;letter-spacing:1px;text-transform:uppercase;margin-bottom:10px}
+.acc-row{display:flex;justify-content:space-between;font-size:13px;color:#888;padding:5px 0;border-bottom:0.5px solid #f8f8f8}
+.acc-row:last-child{border-bottom:none}
+.acc-row.total{font-size:15px;font-weight:500;color:#1a1a1a;padding-top:10px;margin-top:4px;border-top:1px solid #eee;border-bottom:none}
+.review-box{margin-top:12px;padding:14px 16px;border:1px solid #f0f0f0;border-radius:12px;width:100%;text-align:left}
+.review-lbl{font-size:11px;color:#ccc;margin-bottom:7px;letter-spacing:.3px}
+.stars{font-size:20px;letter-spacing:3px;color:#d4a853}
+.review-cta{margin-top:10px;width:100%;padding:9px;border:1px solid #eee;border-radius:8px;background:#fff;font-size:12px;color:#888;cursor:pointer}
 .dots{display:flex;gap:5px;justify-content:center;padding:10px 0 4px;flex-shrink:0}
 .dot{width:5px;height:5px;border-radius:50%;background:#eee;transition:background .2s}
 .dot.on{background:#1a1a1a}
-.email-input{width:100%;padding:12px 14px;border:1px solid #eee;border-radius:10px;font-size:14px;color:#1a1a1a;outline:none;background:#fff;margin-top:0}
-.email-input:focus{border-color:#1a1a1a}
 </style>
 </head>
 <body>
@@ -103,6 +93,7 @@ html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sa
         <div class="cart-pill" id="cart-pill">0</div>
       </div>
     </button>
+    <button class="bill-btn" onclick="goTo('bill')">Pedir la cuenta</button>
   </div>
 </div>
 
@@ -116,91 +107,36 @@ html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sa
     <div class="tot-row"><span>Subtotal</span><span id="sub-val">—</span></div>
     <div class="tot-row main"><span>Total</span><span id="total-val">—</span></div>
   </div>
-  <div class="dots"><div class="dot on"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+  <div class="dots"><div class="dot on"></div><div class="dot"></div></div>
   <div class="cta-bar">
-    <button class="btn-main" onclick="goTo('split')">Confirmar pedido</button>
+    <button class="btn-main" onclick="goTo('menu')">Confirmar pedido</button>
     <button class="btn-ghost" onclick="goTo('menu')">Seguir eligiendo</button>
   </div>
 </div>
 
-<div class="screen" id="sc-split">
-  <div class="sec-hdr">
-    <div class="sec-title" id="sc-split-name">Maison Noire</div>
-    <div class="sec-sub" id="sc-split-sub">Mesa —</div>
-  </div>
-  <div style="flex:1;overflow-y:auto">
-    <div class="blk">
-      <div class="blk-label">¿Cuántos pagan?</div>
-      <div class="chips" id="split-chips">
-        <div class="chip on" onclick="setSplit(this,1)">Solo yo</div>
-        <div class="chip" onclick="setSplit(this,2)">2</div>
-        <div class="chip" onclick="setSplit(this,3)">3</div>
-        <div class="chip" onclick="setSplit(this,4)">4</div>
-      </div>
-      <div class="my-part"><span>Tu parte</span><strong id="my-part">—</strong></div>
-    </div>
-    <div class="blk">
-      <div class="blk-label">Propina</div>
-      <div class="chips" id="tip-chips">
-        <div class="chip" onclick="setTip(this,0)">Sin propina</div>
-        <div class="chip on" onclick="setTip(this,10)">10%</div>
-        <div class="chip" onclick="setTip(this,15)">15%</div>
-        <div class="chip" onclick="setTip(this,20)">20%</div>
-      </div>
-    </div>
-    <div class="blk">
-      <div class="blk-label">Recibo por mail</div>
-      <input class="email-input" id="email-input" type="email" placeholder="tu@email.com" autocomplete="email"/>
-    </div>
-  </div>
-  <div class="grand"><span>Pagás</span><span id="grand-val">—</span></div>
-  <div class="dots"><div class="dot"></div><div class="dot on"></div><div class="dot"></div><div class="dot"></div></div>
-  <div class="cta-bar">
-    <button class="btn-main" onclick="goTo('pay')">Ir a pagar</button>
-  </div>
-</div>
-
-<div class="screen" id="sc-pay">
-  <div class="sec-hdr">
-    <div class="sec-title" id="sc-pay-name">Maison Noire</div>
-    <div class="sec-sub" id="sc-pay-sub">Pagás —</div>
-  </div>
-  <div class="pay-list">
-    <div class="pay-label">Método de pago</div>
-    <button class="pay-opt" onclick="processPay('apple')">
-      <div class="pay-ico" style="background:#000;color:#fff">⌘</div><span>Apple Pay</span>
-    </button>
-    <button class="pay-opt" onclick="processPay('google')">
-      <div class="pay-ico" style="background:#f1f1f1;color:#444">G</div><span>Google Pay</span>
-    </button>
-    <button class="pay-opt" onclick="processPay('card')">
-      <div class="pay-ico" style="background:#eef3ff;color:#3a6bd4">▭</div><span>Tarjeta de crédito / débito</span>
-    </button>
-    <button class="pay-opt" onclick="processPay('mp')">
-      <div class="pay-ico" style="background:#fff0d0;color:#9a7020;font-size:10px;font-weight:700">MP</div><span>Mercado Pago</span>
-    </button>
-    <div class="pay-note">Pago seguro · Sin datos guardados · Sin app</div>
-  </div>
-  <div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot on"></div><div class="dot"></div></div>
-</div>
-
-<div class="screen" id="sc-success">
-  <div class="success">
-    <div class="check-ring">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-        <path d="M5 12l4.5 4.5L19 7" stroke="#1a1a1a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<div class="screen" id="sc-bill">
+  <div class="bill-screen">
+    <div class="bell-ring">
+      <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+        <path d="M14 4c0 0-6 3-6 10v4H6v2h16v-2h-2v-4c0-7-6-10-6-10z" stroke="#1a1a1a" stroke-width="1.5" stroke-linejoin="round"/>
+        <path d="M11.5 20c0 1.38 1.12 2.5 2.5 2.5s2.5-1.12 2.5-2.5" stroke="#1a1a1a" stroke-width="1.5" stroke-linecap="round"/>
+        <circle cx="14" cy="4" r="1.2" fill="#1a1a1a"/>
       </svg>
     </div>
-    <div class="s-title">¡Gracias!</div>
-    <div class="s-sub" id="success-sub">Pago procesado.<br>Podés irte cuando quieras.</div>
+    <div class="bill-title">Cuenta en camino</div>
+    <div class="bill-sub">El mozo te trae la cuenta<br>en un momento.</div>
+    <div class="account-box">
+      <div class="acc-label">Tu consumo · Mesa <span id="bill-table">—</span></div>
+      <div id="bill-items"></div>
+    </div>
     <div class="review-box">
       <div class="review-lbl">¿Cómo estuvo tu experiencia?</div>
       <div class="stars">★★★★★</div>
       <button class="review-cta" id="review-btn">Dejar reseña en Google →</button>
     </div>
-    <div style="font-size:11px;color:#ccc;margin-top:8px">Sin app · Sin cuenta requerida</div>
+    <div style="font-size:11px;color:#ddd;margin-top:6px">Sin app · Sin cuenta requerida</div>
   </div>
-  <div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot on"></div></div>
+  <div class="dots"><div class="dot"></div><div class="dot on"></div></div>
   <div class="cta-bar">
     <button class="btn-ghost" onclick="resetApp()">Volver al inicio</button>
   </div>
@@ -208,7 +144,7 @@ html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sa
 
 </div>
 <script>
-var MENU = {
+var MENU={
   restaurant:{name:"Maison Noire",tagline:"Contemporary cuisine · Montevideo",currency_symbol:"$",logo_initials:"MN",google_review_url:"https://g.page/r/YOUR_PLACE_ID/review"},
   categories:[{id:"starters",label:"Entradas"},{id:"mains",label:"Principales"},{id:"drinks",label:"Bebidas"},{id:"desserts",label:"Postres"}],
   items:[
@@ -230,7 +166,7 @@ var MENU = {
   ]
 };
 
-var cart={},split=1,tip=10,R=MENU.restaurant;
+var cart={},R=MENU.restaurant;
 
 (function init(){
   var table=new URLSearchParams(window.location.search).get('table')||'—';
@@ -239,11 +175,8 @@ var cart={},split=1,tip=10,R=MENU.restaurant;
   document.getElementById('hdr-name').textContent=R.name;
   document.getElementById('hdr-tag').textContent=R.tagline;
   document.getElementById('hdr-table').textContent='Mesa '+table;
-  document.getElementById('sc-split-name').textContent=R.name;
-  document.getElementById('sc-pay-name').textContent=R.name;
   document.getElementById('review-btn').onclick=function(){window.open(R.google_review_url,'_blank');};
-  buildTabs();
-  renderMenu(MENU.categories[0].id);
+  buildTabs();renderMenu(MENU.categories[0].id);
   try{var s=sessionStorage.getItem('mq_cart');if(s){cart=JSON.parse(s);updateCartBar();}}catch(e){}
 })();
 
@@ -256,29 +189,20 @@ function tableNum(){return new URLSearchParams(window.location.search).get('tabl
 function buildTabs(){
   var strip=document.getElementById('tabs');
   MENU.categories.forEach(function(c,i){
-    var t=document.createElement('div');
-    t.className='tab'+(i===0?' active':'');
-    t.textContent=c.label;
-    t.onclick=function(){
-      document.querySelectorAll('.tab').forEach(function(x){x.classList.remove('active');});
-      t.classList.add('active');
-      renderMenu(c.id);
-    };
+    var t=document.createElement('div');t.className='tab'+(i===0?' active':'');t.textContent=c.label;
+    t.onclick=function(){document.querySelectorAll('.tab').forEach(function(x){x.classList.remove('active');});t.classList.add('active');renderMenu(c.id);};
     strip.appendChild(t);
   });
 }
 
 function renderMenu(catId){
-  var list=document.getElementById('menu-list');
-  list.innerHTML='';
+  var list=document.getElementById('menu-list');list.innerHTML='';
   MENU.items.filter(function(i){return i.category===catId;}).forEach(function(item){
     var inCart=cart[item.id]&&cart[item.id].qty>0;
-    var div=document.createElement('div');
-    div.className='menu-item';
+    var div=document.createElement('div');div.className='menu-item';
     div.innerHTML='<div class="item-emoji">'+item.emoji+'</div><div class="item-body"><div class="item-name">'+item.name+'</div><div class="item-desc">'+item.desc+'</div><div class="item-row"><div class="item-price">'+fmt(item.price)+'</div><button class="add-btn'+(inCart?' on':'')+'" data-id="'+item.id+'">'+(inCart?'✓':'+')+'</button></div></div>';
     div.querySelector('.add-btn').addEventListener('click',function(){
-      var id=this.dataset.id;
-      var itm=MENU.items.find(function(x){return x.id===id;});
+      var id=this.dataset.id,itm=MENU.items.find(function(x){return x.id===id;});
       if(!cart[id])cart[id]=Object.assign({},itm,{qty:0});
       if(cart[id].qty===0){cart[id].qty=1;this.classList.add('on');this.textContent='✓';}
       else{cart[id].qty=0;this.classList.remove('on');this.textContent='+';}
@@ -290,24 +214,18 @@ function renderMenu(catId){
 
 function updateCartBar(){
   var n=cartCount(),t=cartTotal();
-  var btn=document.getElementById('cart-btn');
   document.getElementById('cart-pill').textContent=n;
   document.getElementById('cart-total-lbl').textContent=n>0?fmt(t):'';
-  btn.classList.toggle('on',n>0);
+  document.getElementById('cart-btn').classList.toggle('on',n>0);
 }
 
 function renderOrder(){
-  var list=document.getElementById('order-list'),total=cartTotal();
-  list.innerHTML='';
+  var list=document.getElementById('order-list'),total=cartTotal();list.innerHTML='';
   Object.values(cart).filter(function(i){return i.qty>0;}).forEach(function(item){
-    var div=document.createElement('div');
-    div.className='order-row';
+    var div=document.createElement('div');div.className='order-row';
     div.innerHTML='<div class="order-name">'+item.name+'</div><div class="qty-ctrl"><button class="qty-btn" data-id="'+item.id+'" data-d="-1">−</button><span class="qty-n">'+item.qty+'</span><button class="qty-btn" data-id="'+item.id+'" data-d="1">+</button></div><div class="order-price">'+fmt(item.price*item.qty)+'</div>';
     div.querySelectorAll('.qty-btn').forEach(function(b){
-      b.addEventListener('click',function(){
-        cart[this.dataset.id].qty=Math.max(0,cart[this.dataset.id].qty+parseInt(this.dataset.d));
-        renderOrder();updateCartBar();saveCart();
-      });
+      b.addEventListener('click',function(){cart[this.dataset.id].qty=Math.max(0,cart[this.dataset.id].qty+parseInt(this.dataset.d));renderOrder();updateCartBar();saveCart();});
     });
     list.appendChild(div);
   });
@@ -316,42 +234,33 @@ function renderOrder(){
   document.getElementById('order-sub').textContent='Mesa '+tableNum()+' · '+R.name;
 }
 
-function updateSplit(){
-  var total=cartTotal(),part=Math.round(total/split),grand=Math.round(part*(1+tip/100));
-  document.getElementById('sc-split-sub').textContent='Mesa '+tableNum()+' · '+fmt(total)+' total';
-  document.getElementById('my-part').textContent=fmt(part);
-  document.getElementById('grand-val').textContent=fmt(grand);
-  document.getElementById('sc-pay-sub').textContent='Pagás '+fmt(grand);
-}
-function setSplit(el,n){split=n;document.querySelectorAll('#split-chips .chip').forEach(function(c){c.classList.remove('on');});el.classList.add('on');updateSplit();}
-function setTip(el,pct){tip=pct;document.querySelectorAll('#tip-chips .chip').forEach(function(c){c.classList.remove('on');});el.classList.add('on');updateSplit();}
-
-function processPay(method){
-  var email=document.getElementById('email-input').value.trim();
-  document.getElementById('success-sub').innerHTML=email?'Tu recibo llegará a <strong>'+email+'</strong>.<br>Podés irte cuando quieras.':'Pago procesado.<br>Podés irte cuando quieras.';
-  goTo('success');
+function renderBill(){
+  var items=Object.values(cart).filter(function(i){return i.qty>0;});
+  var total=cartTotal();
+  document.getElementById('bill-table').textContent=tableNum();
+  var el=document.getElementById('bill-items');
+  if(items.length===0){
+    el.innerHTML='<div class="acc-row" style="color:#ccc;font-style:italic">Sin selección registrada</div>';
+  } else {
+    el.innerHTML=items.map(function(i){
+      return'<div class="acc-row"><span>'+i.qty+'× '+i.name+'</span><span>'+fmt(i.price*i.qty)+'</span></div>';
+    }).join('')+'<div class="acc-row total"><span>Total</span><span>'+fmt(total)+'</span></div>';
+  }
 }
 
-var screens=['menu','order','split','pay','success'];
+var screens=['menu','order','bill'];
 function goTo(name){
   if(name==='order')renderOrder();
-  if(name==='split')updateSplit();
+  if(name==='bill')renderBill();
   screens.forEach(function(s){document.getElementById('sc-'+s).classList.toggle('active',s===name);});
   window.scrollTo(0,0);
 }
 
 function resetApp(){
-  cart={};split=1;tip=10;
-  try{sessionStorage.removeItem('mq_cart');}catch(e){}
+  cart={};try{sessionStorage.removeItem('mq_cart');}catch(e){}
   document.querySelectorAll('.tab').forEach(function(t,i){t.classList.toggle('active',i===0);});
-  document.querySelectorAll('#split-chips .chip').forEach(function(c,i){c.classList.toggle('on',i===0);});
-  document.querySelectorAll('#tip-chips .chip').forEach(function(c,i){c.classList.toggle('on',i===1);});
-  document.getElementById('email-input').value='';
-  renderMenu(MENU.categories[0].id);
-  updateCartBar();goTo('menu');
+  renderMenu(MENU.categories[0].id);updateCartBar();goTo('menu');
 }
-
-if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('/sw.js').catch(function(){});});}
 </script>
 </body>
 </html>
