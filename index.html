@@ -2,356 +2,69 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"/>
-<meta name="theme-color" content="#ffffff"/>
-<meta name="apple-mobile-web-app-capable" content="yes"/>
-<meta name="apple-mobile-web-app-status-bar-style" content="default"/>
-<title>Maison Noire</title>
-<link rel="manifest" href="manifest.json"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Recibo — Maison Noire</title>
 <style>
-*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#fff;color:#1a1a1a;overscroll-behavior:none}
-#app{display:flex;flex-direction:column;height:100dvh;max-width:480px;margin:0 auto;background:#fff}
-.screen{display:none;flex-direction:column;flex:1;overflow:hidden}
-.screen.active{display:flex}
-.hdr{padding:28px 24px 20px;border-bottom:1px solid #f0f0f0;flex-shrink:0;text-align:center}
-.hdr-logo{width:44px;height:44px;border-radius:50%;border:1px solid #e8e8e8;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-size:13px;font-weight:600;color:#888;letter-spacing:1px}
-.hdr-name{font-size:20px;font-weight:400;letter-spacing:.5px;color:#1a1a1a}
-.hdr-tag{font-size:11px;color:#aaa;margin-top:3px;letter-spacing:.5px}
-.hdr-table{display:inline-block;margin-top:10px;font-size:11px;color:#888;background:#f8f8f8;padding:4px 14px;border-radius:20px;letter-spacing:.5px;border:1px solid #eee}
-.tabs{display:flex;border-bottom:1px solid #f0f0f0;overflow-x:auto;scrollbar-width:none;flex-shrink:0}
-.tabs::-webkit-scrollbar{display:none}
-.tab{padding:12px 18px;font-size:12px;letter-spacing:1px;color:#bbb;white-space:nowrap;cursor:pointer;border-bottom:2px solid transparent;text-transform:uppercase;flex-shrink:0;transition:all .15s}
-.tab.active{color:#1a1a1a;border-bottom-color:#1a1a1a}
-.menu-scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
-.menu-item{display:flex;align-items:flex-start;padding:18px 24px;border-bottom:1px solid #f7f7f7;gap:14px}
-.item-emoji{width:48px;height:48px;background:#f8f8f8;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
-.item-body{flex:1;min-width:0}
-.item-name{font-size:13px;font-weight:500;color:#1a1a1a;line-height:1.3}
-.item-desc{font-size:11px;color:#aaa;margin-top:3px;line-height:1.5}
-.item-row{display:flex;justify-content:space-between;align-items:center;margin-top:10px}
-.item-price{font-size:13px;font-weight:500;color:#1a1a1a}
-.add-btn{width:28px;height:28px;border-radius:50%;border:1px solid #e0e0e0;background:#fff;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#aaa;flex-shrink:0;transition:all .15s}
-.add-btn.on{background:#1a1a1a;border-color:#1a1a1a;color:#fff;font-size:14px}
-.cart-bar{padding:12px 24px 28px;border-top:1px solid #f0f0f0;flex-shrink:0}
-.cart-btn{width:100%;padding:14px;border:none;border-radius:12px;background:#f0f0f0;color:#aaa;font-size:14px;font-weight:500;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:all .2s}
-.cart-btn.on{background:#1a1a1a;color:#fff}
-.cart-pill{background:#ddd;color:#aaa;width:22px;height:22px;border-radius:50%;font-size:11px;font-weight:600;display:flex;align-items:center;justify-content:center;transition:all .2s}
-.cart-btn.on .cart-pill{background:rgba(255,255,255,.2);color:#fff}
-.sec-hdr{padding:20px 24px 16px;border-bottom:1px solid #f0f0f0;flex-shrink:0}
-.sec-title{font-size:18px;font-weight:400;color:#1a1a1a}
-.sec-sub{font-size:11px;color:#aaa;margin-top:3px;letter-spacing:.3px}
-.order-scroll{flex:1;overflow-y:auto}
-.order-row{display:flex;align-items:center;padding:14px 24px;border-bottom:1px solid #f7f7f7;gap:12px}
-.order-name{flex:1;font-size:13px;color:#1a1a1a}
-.qty-ctrl{display:flex;align-items:center;gap:10px}
-.qty-btn{width:24px;height:24px;border-radius:50%;border:1px solid #e8e8e8;background:#fff;font-size:15px;cursor:pointer;color:#666;display:flex;align-items:center;justify-content:center}
-.qty-n{font-size:13px;font-weight:500;min-width:16px;text-align:center}
-.order-price{font-size:13px;color:#1a1a1a;min-width:56px;text-align:right}
-.totals{padding:16px 24px;border-top:1px solid #eee;flex-shrink:0;background:#fafafa}
+body{margin:0;padding:24px 12px;background:#f5f5f0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
+.email{max-width:480px;margin:0 auto;background:#fff;border-radius:12px;overflow:hidden}
+.header{background:#0a0a0a;padding:28px 32px;text-align:center}
+.header-eyebrow{font-size:10px;letter-spacing:3px;color:#555;text-transform:uppercase;margin-bottom:6px}
+.header-name{font-size:24px;font-weight:400;color:#f5f0e8;font-family:Georgia,serif;letter-spacing:1px}
+.header-addr{font-size:11px;color:#444;margin-top:4px;letter-spacing:.5px}
+.gold-bar{height:3px;background:#c9a96e}
+.meta{padding:18px 32px 0;display:flex;justify-content:space-between}
+.meta-label{font-size:11px;color:#aaa}
+.meta-val{font-size:15px;font-weight:500;color:#1a1a1a;margin-top:2px}
+.divider{border:none;border-top:1px solid #f0f0f0;margin:14px 32px 0}
+.items{padding:14px 32px 0}
+.item{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #f8f8f8;font-size:14px}
+.item-name{color:#1a1a1a}
+.item-qty{color:#aaa;margin-right:6px}
+.item-price{color:#1a1a1a;font-weight:500}
+.totals{padding:12px 32px 18px}
 .tot-row{display:flex;justify-content:space-between;font-size:12px;color:#aaa;padding:3px 0}
-.tot-row.main{font-size:16px;color:#1a1a1a;padding-top:10px;margin-top:6px;border-top:1px solid #eee}
-.blk{padding:18px 24px;border-bottom:1px solid #f7f7f7;flex-shrink:0}
-.blk-label{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#bbb;margin-bottom:10px}
-.chips{display:flex;gap:8px}
-.chip{flex:1;padding:9px 4px;border:1px solid #e8e8e8;border-radius:8px;font-size:13px;text-align:center;cursor:pointer;color:#aaa;background:#fff;transition:all .12s}
-.chip.on{border-color:#1a1a1a;color:#1a1a1a;font-weight:500}
-.my-part{display:flex;justify-content:space-between;font-size:13px;color:#888;padding:10px 12px;background:#f8f8f8;border-radius:8px;margin-top:10px}
-.my-part strong{color:#1a1a1a}
-.grand{margin:16px 24px;padding:14px 18px;background:#1a1a1a;border-radius:12px;display:flex;justify-content:space-between;font-size:16px;font-weight:500;color:#fff;flex-shrink:0}
-.pay-list{flex:1;overflow-y:auto;padding:18px 24px}
-.pay-label{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#bbb;margin-bottom:14px}
-.pay-opt{width:100%;padding:14px 16px;border:1px solid #eee;border-radius:12px;background:#fff;font-size:13px;color:#1a1a1a;cursor:pointer;text-align:left;margin-bottom:10px;display:flex;align-items:center;gap:14px;transition:background .1s}
-.pay-opt:active{background:#f8f8f8}
-.pay-ico{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;flex-shrink:0}
-.pay-note{margin-top:12px;font-size:11px;color:#ccc;text-align:center;letter-spacing:.3px}
-.success{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 28px;text-align:center;gap:10px}
-.check-ring{width:60px;height:60px;border-radius:50%;border:1.5px solid #1a1a1a;display:flex;align-items:center;justify-content:center;margin-bottom:8px}
-.s-title{font-size:22px;font-weight:400;color:#1a1a1a;letter-spacing:.5px}
-.s-sub{font-size:13px;color:#aaa;line-height:1.7}
-.review-box{margin-top:20px;padding:16px;border:1px solid #f0f0f0;border-radius:12px;width:100%;text-align:left}
-.review-lbl{font-size:11px;color:#bbb;margin-bottom:8px;letter-spacing:.3px}
-.stars{font-size:22px;letter-spacing:3px;color:#d4a853}
-.review-cta{margin-top:12px;width:100%;padding:10px;border:1px solid #eee;border-radius:8px;background:#fff;font-size:12px;color:#888;cursor:pointer;letter-spacing:.3px}
-.cta-bar{padding:12px 24px 28px;border-top:1px solid #f0f0f0;flex-shrink:0}
-.btn-main{width:100%;padding:14px;border:none;border-radius:12px;background:#1a1a1a;color:#fff;font-size:14px;font-weight:500;cursor:pointer}
-.btn-ghost{width:100%;padding:12px;border:1px solid #eee;border-radius:12px;background:#fff;color:#aaa;font-size:13px;cursor:pointer;margin-top:8px}
-.dots{display:flex;gap:5px;justify-content:center;padding:10px 0 4px;flex-shrink:0}
-.dot{width:5px;height:5px;border-radius:50%;background:#eee;transition:background .2s}
-.dot.on{background:#1a1a1a}
-.email-input{width:100%;padding:12px 14px;border:1px solid #eee;border-radius:10px;font-size:14px;color:#1a1a1a;outline:none;background:#fff;margin-top:0}
-.email-input:focus{border-color:#1a1a1a}
+.tot-main{display:flex;justify-content:space-between;font-size:16px;font-weight:500;color:#1a1a1a;padding:10px 0 4px;margin-top:6px;border-top:1px solid #eee}
+.tot-sub{font-size:11px;color:#ccc;padding-top:2px}
+.footer{background:#f8f8f5;padding:18px 32px;text-align:center;border-top:1px solid #f0f0f0}
+.footer-text{font-size:12px;color:#aaa}
+.footer-note{font-size:10px;color:#ccc;margin-top:4px}
+.badge{display:inline-block;margin-top:6px;background:#f0f0f0;border-radius:20px;padding:3px 12px;font-size:10px;color:#aaa;letter-spacing:.5px}
 </style>
 </head>
 <body>
-<div id="app">
+<div class="email">
+  <div class="header">
+    <div class="header-eyebrow">Recibo de pago</div>
+    <div class="header-name">Maison Noire</div>
+    <div class="header-addr">Av. 18 de Julio 1234 · Montevideo</div>
+  </div>
+  <div class="gold-bar"></div>
 
-<div class="screen active" id="sc-menu">
-  <div class="hdr">
-    <div class="hdr-logo" id="hdr-logo">MN</div>
-    <div class="hdr-name" id="hdr-name">Maison Noire</div>
-    <div class="hdr-tag" id="hdr-tag">Contemporary cuisine · Montevideo</div>
-    <div class="hdr-table" id="hdr-table">Mesa —</div>
+  <div class="meta">
+    <div><div class="meta-label">Mesa</div><div class="meta-val">7</div></div>
+    <div style="text-align:right"><div class="meta-label">Fecha</div><div class="meta-val">10 abr 2026 · 21:34</div></div>
   </div>
-  <div class="tabs" id="tabs"></div>
-  <div class="menu-scroll" id="menu-list"></div>
-  <div class="cart-bar">
-    <button class="cart-btn" id="cart-btn" onclick="goTo('order')">
-      <span>Ver mi selección</span>
-      <div style="display:flex;align-items:center;gap:8px">
-        <span id="cart-total-lbl" style="font-size:12px"></span>
-        <div class="cart-pill" id="cart-pill">0</div>
-      </div>
-    </button>
-  </div>
-</div>
+  <hr class="divider"/>
 
-<div class="screen" id="sc-order">
-  <div class="sec-hdr">
-    <div class="sec-title">Tu selección</div>
-    <div class="sec-sub" id="order-sub">Mesa —</div>
+  <div class="items">
+    <div class="item"><span><span class="item-qty">2×</span>Duck confit</span><span class="item-price">$3.700</span></div>
+    <div class="item"><span><span class="item-qty">1×</span>Champagne Ruinart</span><span class="item-price">$1.200</span></div>
+    <div class="item"><span><span class="item-qty">1×</span>Crème brûlée</span><span class="item-price">$620</span></div>
+    <div class="item"><span><span class="item-qty">2×</span>Negroni</span><span class="item-price">$1.160</span></div>
   </div>
-  <div class="order-scroll" id="order-list"></div>
+
   <div class="totals">
-    <div class="tot-row"><span>Subtotal</span><span id="sub-val">—</span></div>
-    <div class="tot-row main"><span>Total</span><span id="total-val">—</span></div>
+    <div class="tot-row"><span>Subtotal</span><span>$6.680</span></div>
+    <div class="tot-row"><span>Propina (10%)</span><span>$668</span></div>
+    <div class="tot-main"><span>Total pagado</span><span style="color:#c9a96e">$7.348</span></div>
+    <div class="tot-sub">Pagado con Apple Pay · #ORD-A3F9</div>
   </div>
-  <div class="dots"><div class="dot on"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
-  <div class="cta-bar">
-    <button class="btn-main" onclick="goTo('split')">Confirmar pedido</button>
-    <button class="btn-ghost" onclick="goTo('menu')">Seguir eligiendo</button>
-  </div>
-</div>
 
-<div class="screen" id="sc-split">
-  <div class="sec-hdr">
-    <div class="sec-title" id="sc-split-name">Maison Noire</div>
-    <div class="sec-sub" id="sc-split-sub">Mesa —</div>
-  </div>
-  <div style="flex:1;overflow-y:auto">
-    <div class="blk">
-      <div class="blk-label">¿Cuántos pagan?</div>
-      <div class="chips" id="split-chips">
-        <div class="chip on" onclick="setSplit(this,1)">Solo yo</div>
-        <div class="chip" onclick="setSplit(this,2)">2</div>
-        <div class="chip" onclick="setSplit(this,3)">3</div>
-        <div class="chip" onclick="setSplit(this,4)">4</div>
-      </div>
-      <div class="my-part"><span>Tu parte</span><strong id="my-part">—</strong></div>
-    </div>
-    <div class="blk">
-      <div class="blk-label">Propina</div>
-      <div class="chips" id="tip-chips">
-        <div class="chip" onclick="setTip(this,0)">Sin propina</div>
-        <div class="chip on" onclick="setTip(this,10)">10%</div>
-        <div class="chip" onclick="setTip(this,15)">15%</div>
-        <div class="chip" onclick="setTip(this,20)">20%</div>
-      </div>
-    </div>
-    <div class="blk">
-      <div class="blk-label">Recibo por mail</div>
-      <input class="email-input" id="email-input" type="email" placeholder="tu@email.com" autocomplete="email"/>
-    </div>
-  </div>
-  <div class="grand"><span>Pagás</span><span id="grand-val">—</span></div>
-  <div class="dots"><div class="dot"></div><div class="dot on"></div><div class="dot"></div><div class="dot"></div></div>
-  <div class="cta-bar">
-    <button class="btn-main" onclick="goTo('pay')">Ir a pagar</button>
+  <div class="footer">
+    <div class="footer-text">Gracias por tu visita 🖤</div>
+    <div class="footer-note">Este recibo fue generado automáticamente</div>
+    <div class="badge">MESA · QR Pay</div>
   </div>
 </div>
-
-<div class="screen" id="sc-pay">
-  <div class="sec-hdr">
-    <div class="sec-title" id="sc-pay-name">Maison Noire</div>
-    <div class="sec-sub" id="sc-pay-sub">Pagás —</div>
-  </div>
-  <div class="pay-list">
-    <div class="pay-label">Método de pago</div>
-    <button class="pay-opt" onclick="processPay('apple')">
-      <div class="pay-ico" style="background:#000;color:#fff">⌘</div><span>Apple Pay</span>
-    </button>
-    <button class="pay-opt" onclick="processPay('google')">
-      <div class="pay-ico" style="background:#f1f1f1;color:#444">G</div><span>Google Pay</span>
-    </button>
-    <button class="pay-opt" onclick="processPay('card')">
-      <div class="pay-ico" style="background:#eef3ff;color:#3a6bd4">▭</div><span>Tarjeta de crédito / débito</span>
-    </button>
-    <button class="pay-opt" onclick="processPay('mp')">
-      <div class="pay-ico" style="background:#fff0d0;color:#9a7020;font-size:10px;font-weight:700">MP</div><span>Mercado Pago</span>
-    </button>
-    <div class="pay-note">Pago seguro · Sin datos guardados · Sin app</div>
-  </div>
-  <div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot on"></div><div class="dot"></div></div>
-</div>
-
-<div class="screen" id="sc-success">
-  <div class="success">
-    <div class="check-ring">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-        <path d="M5 12l4.5 4.5L19 7" stroke="#1a1a1a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
-    </div>
-    <div class="s-title">¡Gracias!</div>
-    <div class="s-sub" id="success-sub">Pago procesado.<br>Podés irte cuando quieras.</div>
-    <div class="review-box">
-      <div class="review-lbl">¿Cómo estuvo tu experiencia?</div>
-      <div class="stars">★★★★★</div>
-      <button class="review-cta" id="review-btn">Dejar reseña en Google →</button>
-    </div>
-    <div style="font-size:11px;color:#ccc;margin-top:8px">Sin app · Sin cuenta requerida</div>
-  </div>
-  <div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot on"></div></div>
-  <div class="cta-bar">
-    <button class="btn-ghost" onclick="resetApp()">Volver al inicio</button>
-  </div>
-</div>
-
-</div>
-<script>
-var MENU = {
-  restaurant:{name:"Maison Noire",tagline:"Contemporary cuisine · Montevideo",currency_symbol:"$",logo_initials:"MN",google_review_url:"https://g.page/r/YOUR_PLACE_ID/review"},
-  categories:[{id:"starters",label:"Entradas"},{id:"mains",label:"Principales"},{id:"drinks",label:"Bebidas"},{id:"desserts",label:"Postres"}],
-  items:[
-    {id:"b1",category:"starters",name:"Burrata & tomate",desc:"Albahaca, fleur de sel, crutones artesanales",price:890,emoji:"🫙"},
-    {id:"b2",category:"starters",name:"Tataki de atún",desc:"Ponzu, sésamo, daikon encurtido, microgreens",price:1050,emoji:"🐟"},
-    {id:"b3",category:"starters",name:"Velouté de hongos",desc:"Espuma de trufa, croutón de brioche",price:720,emoji:"🍄"},
-    {id:"b4",category:"starters",name:"Carpaccio de lomo",desc:"Alcaparras, parmesano, rúcula, limón",price:980,emoji:"🥩"},
-    {id:"m1",category:"mains",name:"Pato confitado",desc:"Jus de cereza, gratin de papa, ejotes",price:1850,emoji:"🦆"},
-    {id:"m2",category:"mains",name:"Róbalo en papillote",desc:"Hinojo, aceitunas, tomates cherry, azafrán",price:1750,emoji:"🐟"},
-    {id:"m3",category:"mains",name:"Lomo wagyu 200g",desc:"Salsa bordelesa, tuétano asado",price:2900,emoji:"🥩"},
-    {id:"m4",category:"mains",name:"Risotto de hongos",desc:"Parmesano añejo, aceite de trufa, salvia crujiente",price:1320,emoji:"🍄"},
-    {id:"d1",category:"drinks",name:"Champagne Ruinart",desc:"Copa · Frío",price:1200,emoji:"🥂"},
-    {id:"d2",category:"drinks",name:"Côtes du Rhône 2021",desc:"Copa · Blend de Grenache",price:680,emoji:"🍷"},
-    {id:"d3",category:"drinks",name:"Negroni",desc:"Campari, gin, vermouth rosso, naranja",price:580,emoji:"🍹"},
-    {id:"d4",category:"drinks",name:"Agua mineral",desc:"750ml, San Pellegrino",price:280,emoji:"💧"},
-    {id:"p1",category:"desserts",name:"Crème brûlée",desc:"Vainilla de Madagascar, azúcar caramelizada",price:620,emoji:"🍮"},
-    {id:"p2",category:"desserts",name:"Fondant de chocolate",desc:"Tibio, con helado de vainilla",price:680,emoji:"🍫"},
-    {id:"p3",category:"desserts",name:"Selección de quesos",desc:"3 variedades, membrillo, nueces",price:890,emoji:"🧀"}
-  ]
-};
-
-var cart={},split=1,tip=10,R=MENU.restaurant;
-
-(function init(){
-  var table=new URLSearchParams(window.location.search).get('table')||'—';
-  document.title=R.name;
-  document.getElementById('hdr-logo').textContent=R.logo_initials;
-  document.getElementById('hdr-name').textContent=R.name;
-  document.getElementById('hdr-tag').textContent=R.tagline;
-  document.getElementById('hdr-table').textContent='Mesa '+table;
-  document.getElementById('sc-split-name').textContent=R.name;
-  document.getElementById('sc-pay-name').textContent=R.name;
-  document.getElementById('review-btn').onclick=function(){window.open(R.google_review_url,'_blank');};
-  buildTabs();
-  renderMenu(MENU.categories[0].id);
-  try{var s=sessionStorage.getItem('mq_cart');if(s){cart=JSON.parse(s);updateCartBar();}}catch(e){}
-})();
-
-function fmt(n){return R.currency_symbol+Math.round(n).toLocaleString('es-UY');}
-function cartTotal(){return Object.values(cart).reduce(function(s,i){return s+i.price*i.qty;},0);}
-function cartCount(){return Object.values(cart).reduce(function(s,i){return s+i.qty;},0);}
-function saveCart(){try{sessionStorage.setItem('mq_cart',JSON.stringify(cart));}catch(e){}}
-function tableNum(){return new URLSearchParams(window.location.search).get('table')||'—';}
-
-function buildTabs(){
-  var strip=document.getElementById('tabs');
-  MENU.categories.forEach(function(c,i){
-    var t=document.createElement('div');
-    t.className='tab'+(i===0?' active':'');
-    t.textContent=c.label;
-    t.onclick=function(){
-      document.querySelectorAll('.tab').forEach(function(x){x.classList.remove('active');});
-      t.classList.add('active');
-      renderMenu(c.id);
-    };
-    strip.appendChild(t);
-  });
-}
-
-function renderMenu(catId){
-  var list=document.getElementById('menu-list');
-  list.innerHTML='';
-  MENU.items.filter(function(i){return i.category===catId;}).forEach(function(item){
-    var inCart=cart[item.id]&&cart[item.id].qty>0;
-    var div=document.createElement('div');
-    div.className='menu-item';
-    div.innerHTML='<div class="item-emoji">'+item.emoji+'</div><div class="item-body"><div class="item-name">'+item.name+'</div><div class="item-desc">'+item.desc+'</div><div class="item-row"><div class="item-price">'+fmt(item.price)+'</div><button class="add-btn'+(inCart?' on':'')+'" data-id="'+item.id+'">'+(inCart?'✓':'+')+'</button></div></div>';
-    div.querySelector('.add-btn').addEventListener('click',function(){
-      var id=this.dataset.id;
-      var itm=MENU.items.find(function(x){return x.id===id;});
-      if(!cart[id])cart[id]=Object.assign({},itm,{qty:0});
-      if(cart[id].qty===0){cart[id].qty=1;this.classList.add('on');this.textContent='✓';}
-      else{cart[id].qty=0;this.classList.remove('on');this.textContent='+';}
-      updateCartBar();saveCart();
-    });
-    list.appendChild(div);
-  });
-}
-
-function updateCartBar(){
-  var n=cartCount(),t=cartTotal();
-  var btn=document.getElementById('cart-btn');
-  document.getElementById('cart-pill').textContent=n;
-  document.getElementById('cart-total-lbl').textContent=n>0?fmt(t):'';
-  btn.classList.toggle('on',n>0);
-}
-
-function renderOrder(){
-  var list=document.getElementById('order-list'),total=cartTotal();
-  list.innerHTML='';
-  Object.values(cart).filter(function(i){return i.qty>0;}).forEach(function(item){
-    var div=document.createElement('div');
-    div.className='order-row';
-    div.innerHTML='<div class="order-name">'+item.name+'</div><div class="qty-ctrl"><button class="qty-btn" data-id="'+item.id+'" data-d="-1">−</button><span class="qty-n">'+item.qty+'</span><button class="qty-btn" data-id="'+item.id+'" data-d="1">+</button></div><div class="order-price">'+fmt(item.price*item.qty)+'</div>';
-    div.querySelectorAll('.qty-btn').forEach(function(b){
-      b.addEventListener('click',function(){
-        cart[this.dataset.id].qty=Math.max(0,cart[this.dataset.id].qty+parseInt(this.dataset.d));
-        renderOrder();updateCartBar();saveCart();
-      });
-    });
-    list.appendChild(div);
-  });
-  document.getElementById('sub-val').textContent=fmt(total);
-  document.getElementById('total-val').textContent=fmt(total);
-  document.getElementById('order-sub').textContent='Mesa '+tableNum()+' · '+R.name;
-}
-
-function updateSplit(){
-  var total=cartTotal(),part=Math.round(total/split),grand=Math.round(part*(1+tip/100));
-  document.getElementById('sc-split-sub').textContent='Mesa '+tableNum()+' · '+fmt(total)+' total';
-  document.getElementById('my-part').textContent=fmt(part);
-  document.getElementById('grand-val').textContent=fmt(grand);
-  document.getElementById('sc-pay-sub').textContent='Pagás '+fmt(grand);
-}
-function setSplit(el,n){split=n;document.querySelectorAll('#split-chips .chip').forEach(function(c){c.classList.remove('on');});el.classList.add('on');updateSplit();}
-function setTip(el,pct){tip=pct;document.querySelectorAll('#tip-chips .chip').forEach(function(c){c.classList.remove('on');});el.classList.add('on');updateSplit();}
-
-function processPay(method){
-  var email=document.getElementById('email-input').value.trim();
-  document.getElementById('success-sub').innerHTML=email?'Tu recibo llegará a <strong>'+email+'</strong>.<br>Podés irte cuando quieras.':'Pago procesado.<br>Podés irte cuando quieras.';
-  goTo('success');
-}
-
-var screens=['menu','order','split','pay','success'];
-function goTo(name){
-  if(name==='order')renderOrder();
-  if(name==='split')updateSplit();
-  screens.forEach(function(s){document.getElementById('sc-'+s).classList.toggle('active',s===name);});
-  window.scrollTo(0,0);
-}
-
-function resetApp(){
-  cart={};split=1;tip=10;
-  try{sessionStorage.removeItem('mq_cart');}catch(e){}
-  document.querySelectorAll('.tab').forEach(function(t,i){t.classList.toggle('active',i===0);});
-  document.querySelectorAll('#split-chips .chip').forEach(function(c,i){c.classList.toggle('on',i===0);});
-  document.querySelectorAll('#tip-chips .chip').forEach(function(c,i){c.classList.toggle('on',i===1);});
-  document.getElementById('email-input').value='';
-  renderMenu(MENU.categories[0].id);
-  updateCartBar();goTo('menu');
-}
-
-if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('/sw.js').catch(function(){});});}
-</script>
 </body>
 </html>
