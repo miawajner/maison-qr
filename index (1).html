@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"/>
+<meta name="theme-color" content="#ffffff"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<title>Maison Noire</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#fff;color:#1a1a1a;overscroll-behavior:none}
+#app{display:flex;flex-direction:column;height:100dvh;max-width:480px;margin:0 auto;background:#fff;position:relative;overflow:hidden}
+.screen{display:none;flex-direction:column;flex:1;overflow:hidden}
+.screen.active{display:flex}
+.hdr{padding:24px 24px 18px;border-bottom:1px solid #f0f0f0;flex-shrink:0;text-align:center}
+.hdr-logo{width:40px;height:40px;border-radius:50%;border:1px solid #e8e8e8;display:flex;align-items:center;justify-content:center;margin:0 auto 10px;font-size:12px;font-weight:600;color:#888;letter-spacing:1px}
+.hdr-name{font-size:19px;font-weight:400;letter-spacing:.5px;color:#1a1a1a}
+.hdr-tag{font-size:11px;color:#aaa;margin-top:2px;letter-spacing:.5px}
+.hdr-table{display:inline-block;margin-top:8px;font-size:11px;color:#888;background:#f8f8f8;padding:3px 12px;border-radius:20px;letter-spacing:.5px;border:1px solid #eee}
+.tabs{display:flex;border-bottom:1px solid #f0f0f0;overflow-x:auto;scrollbar-width:none;flex-shrink:0}
+.tabs::-webkit-scrollbar{display:none}
+.tab{padding:11px 16px;font-size:12px;letter-spacing:1px;color:#bbb;white-space:nowrap;cursor:pointer;border-bottom:2px solid transparent;text-transform:uppercase;flex-shrink:0;transition:all .15s}
+.tab.active{color:#1a1a1a;border-bottom-color:#1a1a1a}
+.menu-scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.menu-item{display:flex;align-items:flex-start;padding:16px 24px;border-bottom:1px solid #f7f7f7;gap:12px}
+.item-emoji{width:46px;height:46px;background:#f8f8f8;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0}
+.item-body{flex:1;min-width:0}
+.item-name{font-size:13px;font-weight:500;color:#1a1a1a;line-height:1.3}
+.item-desc{font-size:11px;color:#aaa;margin-top:2px;line-height:1.5}
+.item-row{display:flex;justify-content:space-between;align-items:center;margin-top:8px}
+.item-price{font-size:13px;font-weight:500;color:#1a1a1a}
+.add-btn{width:28px;height:28px;border-radius:50%;border:1px solid #e0e0e0;background:#fff;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#aaa;flex-shrink:0;transition:all .15s;position:relative}
+.add-btn.on{background:#1a1a1a;border-color:#1a1a1a;color:#fff;font-size:11px}
+.add-btn .qty-badge{display:none}
+.add-btn.on .qty-badge{display:flex;position:absolute;top:-6px;right:-6px;width:16px;height:16px;border-radius:50%;background:#1a1a1a;border:1.5px solid #fff;font-size:9px;font-weight:700;color:#fff;align-items:center;justify-content:center}
+.action-bar{padding:12px 24px 24px;border-top:1px solid #f0f0f0;flex-shrink:0;display:flex;flex-direction:column;gap:8px}
+.btn-primary{width:100%;padding:14px;border:none;border-radius:12px;background:#1a1a1a;color:#fff;font-size:14px;font-weight:500;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:all .2s}
+.btn-primary:disabled{background:#f0f0f0;color:#aaa}
+.cart-pill{background:rgba(255,255,255,.2);color:#fff;width:22px;height:22px;border-radius:50%;font-size:11px;font-weight:600;display:flex;align-items:center;justify-content:center}
+.btn-primary:disabled .cart-pill{background:#e0e0e0;color:#bbb}
+.btn-row{display:flex;gap:8px}
+.btn-sec{flex:1;padding:11px;border:1px solid #e0e0e0;border-radius:12px;background:#fff;color:#666;font-size:13px;cursor:pointer;transition:all .15s;text-align:center}
+.btn-sec:active{background:#f5f5f5}
+.sec-hdr{padding:18px 24px 14px;border-bottom:1px solid #f0f0f0;flex-shrink:0}
+.sec-title{font-size:18px;font-weight:400;color:#1a1a1a}
+.sec-sub{font-size:11px;color:#aaa;margin-top:2px;letter-spacing:.3px}
+.order-scroll{flex:1;overflow-y:auto}
+.round-label{padding:8px 24px;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:#bbb;background:#fafafa;border-bottom:1px solid #f5f5f5}
+.order-row{display:flex;align-items:flex-start;padding:13px 24px;border-bottom:1px solid #f7f7f7;gap:12px}
+.order-info{flex:1;min-width:0}
+.order-name{font-size:13px;color:#1a1a1a}
+.order-comment{font-size:11px;color:#aaa;font-style:italic;margin-top:3px}
+.confirmed-tag{font-size:10px;color:#3ecf8e;background:#f0fdf8;border:1px solid #bbf0dc;border-radius:20px;padding:2px 8px;margin-left:4px}
+.qty-ctrl{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.qty-btn{width:24px;height:24px;border-radius:50%;border:1px solid #e8e8e8;background:#fff;font-size:14px;cursor:pointer;color:#666;display:flex;align-items:center;justify-content:center}
+.qty-n{font-size:13px;font-weight:500;min-width:16px;text-align:center}
+.order-price{font-size:13px;color:#1a1a1a;min-width:56px;text-align:right;padding-top:2px}
+.totals{padding:14px 24px;border-top:1px solid #eee;flex-shrink:0;background:#fafafa}
+.tot-row{display:flex;justify-content:space-between;font-size:12px;color:#aaa;padding:2px 0}
+.tot-row.main{font-size:16px;color:#1a1a1a;padding-top:8px;margin-top:5px;border-top:1px solid #eee}
+.confirm-screen{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:36px 28px;text-align:center;gap:10px}
+.confirm-icon{width:68px;height:68px;border-radius:50%;border:1.5px solid #1a1a1a;display:flex;align-items:center;justify-content:center;margin-bottom:6px}
+.confirm-title{font-size:21px;font-weight:400;color:#1a1a1a;letter-spacing:.3px}
+.confirm-sub{font-size:13px;color:#aaa;line-height:1.7}
+.staff-screen{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:36px 28px;text-align:center;gap:10px}
+.staff-icon{width:68px;height:68px;border-radius:50%;background:#fef3c7;border:1.5px solid #fcd34d;display:flex;align-items:center;justify-content:center;margin-bottom:6px;animation:pulse-amber 1.5s ease-in-out 3}
+@keyframes pulse-amber{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
+.staff-title{font-size:21px;font-weight:400;color:#1a1a1a}
+.staff-sub{font-size:13px;color:#aaa;line-height:1.7}
+.staff-eta{display:inline-block;margin-top:4px;background:#fef3c7;border:1px solid #fcd34d;border-radius:20px;padding:5px 16px;font-size:12px;color:#92400e}
+.bill-screen{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:36px 28px;text-align:center;gap:10px;overflow-y:auto}
+.bell-icon{width:68px;height:68px;border-radius:50%;border:1.5px solid #1a1a1a;display:flex;align-items:center;justify-content:center;margin-bottom:6px;animation:wiggle .5s ease;flex-shrink:0}
+@keyframes wiggle{0%,100%{transform:rotate(0)}20%{transform:rotate(-10deg)}40%{transform:rotate(10deg)}60%{transform:rotate(-5deg)}80%{transform:rotate(5deg)}}
+.bill-title{font-size:21px;font-weight:400;color:#1a1a1a}
+.bill-sub{font-size:13px;color:#aaa;line-height:1.7}
+.account-box{margin-top:14px;padding:14px 16px;border:1px solid #f0f0f0;border-radius:12px;width:100%;text-align:left}
+.acc-label{font-size:10px;color:#ccc;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px}
+.acc-row{display:flex;justify-content:space-between;font-size:13px;color:#888;padding:4px 0;border-bottom:.5px solid #f8f8f8}
+.acc-row:last-child{border-bottom:none}
+.acc-row.total{font-size:15px;font-weight:500;color:#1a1a1a;padding-top:8px;margin-top:4px;border-top:1px solid #eee;border-bottom:none}
+.review-box{margin-top:10px;padding:13px 16px;border:1px solid #f0f0f0;border-radius:12px;width:100%;text-align:left}
+.review-lbl{font-size:11px;color:#ccc;margin-bottom:6px}
+.stars{font-size:20px;letter-spacing:3px;color:#d4a853}
+.review-cta{margin-top:9px;width:100%;padding:8px;border:1px solid #eee;border-radius:8px;background:#fff;font-size:12px;color:#888;cursor:pointer}
+.cta-bar{padding:10px 24px 24px;border-top:1px solid #f0f0f0;flex-shrink:0}
+.btn-main{width:100%;padding:13px;border:none;border-radius:12px;background:#1a1a1a;color:#fff;font-size:14px;font-weight:500;cursor:pointer}
+.btn-ghost{width:100%;padding:11px;border:1px solid #eee;border-radius:12px;background:#fff;color:#aaa;font-size:13px;cursor:pointer;margin-top:7px}
+.dots{display:flex;gap:5px;justify-content:center;padding:8px 0 3px;flex-shrink:0}
+.dot{width:5px;height:5px;border-radius:50%;background:#eee;transition:background .2s}
+.dot.on{background:#1a1a1a}
+.toast{position:absolute;top:20px;left:50%;transform:translateX(-50%);background:#1a1a1a;color:#fff;font-size:12px;padding:8px 18px;border-radius:20px;white-space:nowrap;opacity:0;transition:opacity .3s;pointer-events:none;z-index:100}
+.toast.show{opacity:1}
+
+/* ── Bottom sheet ── */
+.overlay{position:absolute;inset:0;background:rgba(0,0,0,.45);z-index:50;opacity:0;transition:opacity .25s;pointer-events:none}
+.overlay.show{opacity:1;pointer-events:all}
+.sheet{position:absolute;bottom:0;left:0;right:0;background:#fff;border-radius:20px 20px 0 0;padding:0 0 36px;z-index:51;transform:translateY(100%);transition:transform .28s cubic-bezier(.25,.46,.45,.94)}
+.sheet.show{transform:translateY(0)}
+.sheet-handle{width:36px;height:4px;background:#e8e8e8;border-radius:2px;margin:14px auto 18px}
+.sheet-emoji{font-size:28px;text-align:center;margin-bottom:8px}
+.sheet-name{font-size:17px;font-weight:500;color:#1a1a1a;padding:0 24px;margin-bottom:3px}
+.sheet-desc{font-size:12px;color:#aaa;padding:0 24px;margin-bottom:18px;line-height:1.5}
+.sheet-qty-row{display:flex;align-items:center;justify-content:space-between;padding:0 24px;margin-bottom:18px}
+.sheet-qty-label{font-size:13px;color:#888}
+.sheet-qty-ctrl{display:flex;align-items:center;gap:16px}
+.sheet-qty-btn{width:36px;height:36px;border-radius:50%;border:1px solid #e0e0e0;background:#fff;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#1a1a1a;transition:background .1s}
+.sheet-qty-btn:active{background:#f5f5f5}
+.sheet-qty-btn:disabled{color:#ddd;border-color:#f0f0f0;cursor:default}
+.sheet-qty-n{font-size:20px;font-weight:500;min-width:28px;text-align:center}
+.sheet-comment-wrap{padding:0 24px;margin-bottom:20px}
+.sheet-comment-label{font-size:10px;color:#bbb;letter-spacing:1px;text-transform:uppercase;margin-bottom:7px}
+.sheet-comment{width:100%;padding:10px 12px;border:1px solid #eee;border-radius:10px;font-size:13px;color:#1a1a1a;outline:none;resize:none;font-family:inherit;line-height:1.5;min-height:72px}
+.sheet-comment:focus{border-color:#1a1a1a}
+.sheet-comment::placeholder{color:#ddd}
+.sheet-footer{padding:0 24px;display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.sheet-price{font-size:14px;color:#888}
+.sheet-price strong{color:#1a1a1a;font-size:16px}
+.sheet-add-btn{padding:11px 22px;border:none;border-radius:10px;background:#1a1a1a;color:#fff;font-size:13px;font-weight:500;cursor:pointer}
+.sheet-add-btn:disabled{background:#f0f0f0;color:#aaa;cursor:default}
+</style>
+</head>
+<body>
+<div id="app">
+
+<div class="toast" id="toast"></div>
+<div class="overlay" id="overlay" onclick="closeSheet()"></div>
+<div class="sheet" id="sheet">
+  <div class="sheet-handle"></div>
+  <div class="sheet-emoji" id="sh-emoji"></div>
+  <div class="sheet-name" id="sh-name"></div>
+  <div class="sheet-desc" id="sh-desc"></div>
+  <div class="sheet-qty-row">
+    <div class="sheet-qty-label">Cantidad</div>
+    <div class="sheet-qty-ctrl">
+      <button class="sheet-qty-btn" id="sh-minus" onclick="sheetQty(-1)">−</button>
+      <span class="sheet-qty-n" id="sh-qty">1</span>
+      <button class="sheet-qty-btn" onclick="sheetQty(1)">+</button>
+    </div>
+  </div>
+  <div class="sheet-comment-wrap">
+    <div class="sheet-comment-label">Comentario / aclaración</div>
+    <textarea class="sheet-comment" id="sh-comment" placeholder="Ej: sin gluten, término jugoso, sin cebolla..." rows="3"></textarea>
+  </div>
+  <div class="sheet-footer">
+    <div class="sheet-price">Total: <strong id="sh-price">$0</strong></div>
+    <button class="sheet-add-btn" id="sh-add-btn" onclick="sheetConfirm()">Agregar al pedido</button>
+  </div>
+</div>
+
+<!-- ══ MENÚ ══ -->
+<div class="screen active" id="sc-menu">
+  <div class="hdr">
+    <div class="hdr-logo" id="hdr-logo">MN</div>
+    <div class="hdr-name" id="hdr-name">Maison Noire</div>
+    <div class="hdr-tag" id="hdr-tag">Contemporary cuisine · Montevideo</div>
+    <div class="hdr-table" id="hdr-table">Mesa —</div>
+  </div>
+  <div class="tabs" id="tabs"></div>
+  <div class="menu-scroll" id="menu-list"></div>
+  <div class="action-bar">
+    <button class="btn-primary" id="cart-btn" onclick="goTo('order')" disabled>
+      <span>Confirmar pedido</span>
+      <div style="display:flex;align-items:center;gap:8px">
+        <span id="cart-total-lbl" style="font-size:12px;opacity:.7"></span>
+        <div class="cart-pill" id="cart-pill">0</div>
+      </div>
+    </button>
+    <div class="btn-row">
+      <button class="btn-sec" onclick="goTo('staff')">Llamar al personal</button>
+      <button class="btn-sec" onclick="goTo('bill')">Pedir la cuenta</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ ORDEN ══ -->
+<div class="screen" id="sc-order">
+  <div class="sec-hdr">
+    <div class="sec-title">Mi pedido</div>
+    <div class="sec-sub" id="order-sub">Mesa —</div>
+  </div>
+  <div class="order-scroll" id="order-list"></div>
+  <div class="totals">
+    <div class="tot-row"><span>Subtotal</span><span id="sub-val">—</span></div>
+    <div class="tot-row main"><span>Total</span><span id="total-val">—</span></div>
+  </div>
+  <div class="dots"><div class="dot on"></div><div class="dot"></div><div class="dot"></div></div>
+  <div class="cta-bar">
+    <button class="btn-main" onclick="confirmOrder()">Enviar pedido a cocina</button>
+    <button class="btn-ghost" onclick="goTo('menu')">Seguir eligiendo</button>
+  </div>
+</div>
+
+<!-- ══ CONFIRMACIÓN ══ -->
+<div class="screen" id="sc-confirm">
+  <div class="confirm-screen">
+    <div class="confirm-icon">
+      <svg width="26" height="26" viewBox="0 0 26 26" fill="none">
+        <path d="M4 13l6 6L22 7" stroke="#1a1a1a" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <div class="confirm-title">Pedido enviado</div>
+    <div class="confirm-sub">Tu pedido está en camino a cocina.<br>En breve te lo llevamos a la mesa.</div>
+  </div>
+  <div class="dots"><div class="dot"></div><div class="dot on"></div><div class="dot"></div></div>
+  <div class="cta-bar">
+    <button class="btn-main" onclick="goTo('menu')">Ver menú de nuevo</button>
+    <div class="btn-row" style="margin-top:8px">
+      <button class="btn-sec" onclick="goTo('staff')">Llamar al personal</button>
+      <button class="btn-sec" onclick="goTo('bill')">Pedir la cuenta</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ PERSONAL ══ -->
+<div class="screen" id="sc-staff">
+  <div class="staff-screen">
+    <div class="staff-icon">
+      <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+        <circle cx="14" cy="9" r="4" stroke="#92400e" stroke-width="1.5"/>
+        <path d="M6 22c0-4.4 3.6-8 8-8s8 3.6 8 8" stroke="#92400e" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <div class="staff-title">Personal en camino</div>
+    <div class="staff-sub">Alguien de nuestro equipo<br>se acerca a tu mesa.</div>
+    <div class="staff-eta">Tiempo estimado: 1–2 minutos</div>
+  </div>
+  <div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot on"></div></div>
+  <div class="cta-bar"><button class="btn-ghost" onclick="goBack()">Volver</button></div>
+</div>
+
+<!-- ══ CUENTA ══ -->
+<div class="screen" id="sc-bill">
+  <div class="bill-screen">
+    <div class="bell-icon">
+      <svg width="26" height="26" viewBox="0 0 26 26" fill="none">
+        <path d="M13 3c0 0-6 3.5-6 10v4H5v2h16v-2h-2v-4c0-6.5-6-10-6-10z" stroke="#1a1a1a" stroke-width="1.5" stroke-linejoin="round"/>
+        <path d="M10.5 19c0 1.38 1.12 2.5 2.5 2.5s2.5-1.12 2.5-2.5" stroke="#1a1a1a" stroke-width="1.5" stroke-linecap="round"/>
+        <circle cx="13" cy="3.5" r="1.2" fill="#1a1a1a"/>
+      </svg>
+    </div>
+    <div class="bill-title">Cuenta en camino</div>
+    <div class="bill-sub">El mozo te trae la cuenta<br>en un momento.</div>
+    <div class="account-box">
+      <div class="acc-label">Consumo · Mesa <span id="bill-table">—</span></div>
+      <div id="bill-items"></div>
+    </div>
+    <div class="review-box">
+      <div class="review-lbl">¿Cómo estuvo tu experiencia?</div>
+      <div class="stars">★★★★★</div>
+      <button class="review-cta" id="review-btn">Dejar reseña en Google →</button>
+    </div>
+  </div>
+  <div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot on"></div></div>
+  <div class="cta-bar"><button class="btn-ghost" onclick="resetApp()">Volver al inicio</button></div>
+</div>
+
+</div>
+<script>
+var MENU={
+  restaurant:{name:"Maison Noire",tagline:"Contemporary cuisine · Montevideo",currency_symbol:"$",logo_initials:"MN",google_review_url:"https://g.page/r/YOUR_PLACE_ID/review"},
+  categories:[{id:"starters",label:"Entradas"},{id:"mains",label:"Principales"},{id:"drinks",label:"Bebidas"},{id:"desserts",label:"Postres"}],
+  items:[
+    {id:"b1",category:"starters",name:"Burrata & tomate",desc:"Albahaca, fleur de sel, crutones artesanales",price:890,emoji:"🫙"},
+    {id:"b2",category:"starters",name:"Tataki de atún",desc:"Ponzu, sésamo, daikon encurtido, microgreens",price:1050,emoji:"🐟"},
+    {id:"b3",category:"starters",name:"Velouté de hongos",desc:"Espuma de trufa, croutón de brioche",price:720,emoji:"🍄"},
+    {id:"b4",category:"starters",name:"Carpaccio de lomo",desc:"Alcaparras, parmesano, rúcula, limón",price:980,emoji:"🥩"},
+    {id:"m1",category:"mains",name:"Pato confitado",desc:"Jus de cereza, gratin de papa, ejotes",price:1850,emoji:"🦆"},
+    {id:"m2",category:"mains",name:"Róbalo en papillote",desc:"Hinojo, aceitunas, tomates cherry, azafrán",price:1750,emoji:"🐟"},
+    {id:"m3",category:"mains",name:"Lomo wagyu 200g",desc:"Salsa bordelesa, tuétano asado",price:2900,emoji:"🥩"},
+    {id:"m4",category:"mains",name:"Risotto de hongos",desc:"Parmesano añejo, aceite de trufa, salvia crujiente",price:1320,emoji:"🍄"},
+    {id:"d1",category:"drinks",name:"Champagne Ruinart",desc:"Copa · Frío",price:1200,emoji:"🥂"},
+    {id:"d2",category:"drinks",name:"Côtes du Rhône 2021",desc:"Copa · Blend de Grenache",price:680,emoji:"🍷"},
+    {id:"d3",category:"drinks",name:"Negroni",desc:"Campari, gin, vermouth rosso, naranja",price:580,emoji:"🍹"},
+    {id:"d4",category:"drinks",name:"Agua mineral",desc:"750ml, San Pellegrino",price:280,emoji:"💧"},
+    {id:"p1",category:"desserts",name:"Crème brûlée",desc:"Vainilla de Madagascar, azúcar caramelizada",price:620,emoji:"🍮"},
+    {id:"p2",category:"desserts",name:"Fondant de chocolate",desc:"Tibio, con helado de vainilla",price:680,emoji:"🍫"},
+    {id:"p3",category:"desserts",name:"Selección de quesos",desc:"3 variedades, membrillo, nueces",price:890,emoji:"🧀"}
+  ]
+};
+
+// cart[id] = { ...item, qty, comment }
+var cart={}, confirmedOrders=[], R=MENU.restaurant, prevScreen='menu';
+
+// API — reemplaza esta URL con la de Railway cuando hagas deploy
+var API_URL = 'https://web-production-da05.up.railway.app';
+var RESTO   = new URLSearchParams(window.location.search).get('resto') || 'maison';
+
+function apiPost(path, body){
+  return fetch(API_URL + path, {
+    method:  'POST',
+    headers: {'Content-Type':'application/json'},
+    body:    JSON.stringify(body),
+  }).catch(function(){ return null; });
+}
+
+// ── Sheet state ──────────────────────────────────────────────────────────
+var sheetItem=null, sheetQtyVal=1;
+
+function openSheet(id){
+  sheetItem=MENU.items.find(function(x){return x.id===id;});
+  if(!sheetItem)return;
+  var existing=cart[id];
+  sheetQtyVal=existing?existing.qty:1;
+  document.getElementById('sh-emoji').textContent=sheetItem.emoji;
+  document.getElementById('sh-name').textContent=sheetItem.name;
+  document.getElementById('sh-desc').textContent=sheetItem.desc;
+  document.getElementById('sh-comment').value=existing&&existing.comment?existing.comment:'';
+  updateSheetQty();
+  document.getElementById('overlay').classList.add('show');
+  document.getElementById('sheet').classList.add('show');
+  setTimeout(function(){document.getElementById('sh-comment').focus&&document.getElementById('sh-comment').blur();},300);
+}
+
+function closeSheet(){
+  document.getElementById('overlay').classList.remove('show');
+  document.getElementById('sheet').classList.remove('show');
+  sheetItem=null;
+}
+
+function sheetQty(d){
+  sheetQtyVal=Math.max(1,sheetQtyVal+d);
+  updateSheetQty();
+}
+
+function updateSheetQty(){
+  document.getElementById('sh-qty').textContent=sheetQtyVal;
+  document.getElementById('sh-price').textContent=fmt(sheetItem.price*sheetQtyVal);
+  document.getElementById('sh-minus').disabled=sheetQtyVal<=1;
+}
+
+function sheetConfirm(){
+  if(!sheetItem)return;
+  var comment=document.getElementById('sh-comment').value.trim();
+  cart[sheetItem.id]=Object.assign({},sheetItem,{qty:sheetQtyVal,comment:comment});
+  closeSheet();
+  updateCartBar();
+  renderMenuItem(sheetItem.id);
+  showToast(sheetQtyVal+'× '+sheetItem.name+' agregado');
+}
+
+// ── Init ─────────────────────────────────────────────────────────────────
+(function init(){
+  var table=new URLSearchParams(window.location.search).get('table')||'—';
+  document.title=R.name;
+  document.getElementById('hdr-logo').textContent=R.logo_initials;
+  document.getElementById('hdr-name').textContent=R.name;
+  document.getElementById('hdr-tag').textContent=R.tagline;
+  document.getElementById('hdr-table').textContent='Mesa '+table;
+  document.getElementById('review-btn').onclick=function(){window.open(R.google_review_url,'_blank');};
+  buildTabs();
+  renderMenu(MENU.categories[0].id);
+})();
+
+function fmt(n){return R.currency_symbol+Math.round(n).toLocaleString('es-UY');}
+function cartTotal(){return Object.values(cart).reduce(function(s,i){return s+i.price*i.qty;},0);}
+function cartCount(){return Object.values(cart).reduce(function(s,i){return s+i.qty;},0);}
+function confirmedTotal(){return confirmedOrders.reduce(function(s,i){return s+i.price*i.qty;},0);}
+function allTotal(){return cartTotal()+confirmedTotal();}
+function tableNum(){return new URLSearchParams(window.location.search).get('table')||'—';}
+
+function showToast(msg){
+  var t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');
+  setTimeout(function(){t.classList.remove('show');},2000);
+}
+
+function buildTabs(){
+  var strip=document.getElementById('tabs');
+  MENU.categories.forEach(function(c,i){
+    var t=document.createElement('div');t.className='tab'+(i===0?' active':'');t.textContent=c.label;
+    t.onclick=function(){document.querySelectorAll('.tab').forEach(function(x){x.classList.remove('active');});t.classList.add('active');renderMenu(c.id);};
+    strip.appendChild(t);
+  });
+}
+
+var currentCatItems=[];
+
+function renderMenu(catId){
+  currentCatItems=MENU.items.filter(function(i){return i.category===catId;});
+  var list=document.getElementById('menu-list');list.innerHTML='';
+  currentCatItems.forEach(function(item){renderMenuItemInto(list,item);});
+}
+
+function renderMenuItemInto(container,item){
+  var inCart=cart[item.id]&&cart[item.id].qty>0;
+  var qty=inCart?cart[item.id].qty:0;
+  var div=document.createElement('div');div.className='menu-item';div.dataset.itemid=item.id;
+  div.innerHTML=
+    '<div class="item-emoji">'+item.emoji+'</div>'+
+    '<div class="item-body">'+
+      '<div class="item-name">'+item.name+'</div>'+
+      '<div class="item-desc">'+item.desc+'</div>'+
+      '<div class="item-row">'+
+        '<div class="item-price">'+fmt(item.price)+'</div>'+
+        '<button class="add-btn'+(inCart?' on':'')+'" data-id="'+item.id+'">'+
+          (inCart?'✓':'+')+'<span class="qty-badge">'+(qty>1?qty:'')+'</span>'+
+        '</button>'+
+      '</div>'+
+    '</div>';
+  div.querySelector('.add-btn').addEventListener('click',function(){openSheet(item.id);});
+  container.appendChild(div);
+}
+
+function renderMenuItem(id){
+  var el=document.querySelector('[data-itemid="'+id+'"]');
+  if(!el)return;
+  var item=MENU.items.find(function(x){return x.id===id;});
+  if(!item)return;
+  var parent=el.parentNode;
+  el.remove();
+  renderMenuItemInto(parent,item);
+}
+
+function updateCartBar(){
+  var n=cartCount(),t=cartTotal();
+  document.getElementById('cart-pill').textContent=n;
+  document.getElementById('cart-total-lbl').textContent=n>0?fmt(t):'';
+  document.getElementById('cart-btn').disabled=n===0;
+}
+
+function renderOrder(){
+  var list=document.getElementById('order-list');list.innerHTML='';
+  if(confirmedOrders.length>0){
+    addLabel(list,'Pedidos anteriores · en cocina');
+    confirmedOrders.forEach(function(item){
+      var div=document.createElement('div');div.className='order-row';
+      div.innerHTML=
+        '<div class="order-info">'+
+          '<div class="order-name" style="color:#aaa">'+item.qty+'× '+item.name+
+            ' <span class="confirmed-tag">en cocina</span>'+
+          '</div>'+
+          (item.comment?'<div class="order-comment">'+item.comment+'</div>':'')+
+        '</div>'+
+        '<div class="order-price" style="color:#aaa">'+fmt(item.price*item.qty)+'</div>';
+      list.appendChild(div);
+    });
+  }
+  var cur=Object.values(cart).filter(function(i){return i.qty>0;});
+  if(cur.length>0){
+    addLabel(list,'Nuevo pedido');
+    cur.forEach(function(item){
+      var div=document.createElement('div');div.className='order-row';
+      div.innerHTML=
+        '<div class="order-info">'+
+          '<div class="order-name">'+item.name+'</div>'+
+          (item.comment?'<div class="order-comment">'+item.comment+'</div>':'')+
+        '</div>'+
+        '<div class="qty-ctrl">'+
+          '<button class="qty-btn" data-id="'+item.id+'" data-d="-1">−</button>'+
+          '<span class="qty-n">'+item.qty+'</span>'+
+          '<button class="qty-btn" data-id="'+item.id+'" data-d="1">+</button>'+
+        '</div>'+
+        '<div class="order-price">'+fmt(item.price*item.qty)+'</div>';
+      div.querySelectorAll('.qty-btn').forEach(function(b){
+        b.addEventListener('click',function(){
+          var id=this.dataset.id,d=parseInt(this.dataset.d);
+          cart[id].qty=Math.max(0,cart[id].qty+d);
+          renderOrder();updateCartBar();renderMenuItem(id);
+        });
+      });
+      list.appendChild(div);
+    });
+  }
+  document.getElementById('sub-val').textContent=fmt(allTotal());
+  document.getElementById('total-val').textContent=fmt(allTotal());
+  document.getElementById('order-sub').textContent='Mesa '+tableNum()+' · '+R.name;
+}
+
+function addLabel(parent,text){
+  var d=document.createElement('div');d.className='round-label';d.textContent=text;parent.appendChild(d);
+}
+
+function confirmOrder(){
+  var items=Object.values(cart).filter(function(i){return i.qty>0;});
+  // Enviar al backend (no bloquea si falla)
+  apiPost('/api/pedidos',{
+    resto:  RESTO,
+    mesa:   tableNum(),
+    items:  items.map(function(i){return{id:i.id,name:i.name,qty:i.qty,price:i.price,comment:i.comment||''};},),
+    total:  cartTotal(),
+  });
+  items.forEach(function(item){
+    var ex=confirmedOrders.find(function(c){return c.id===item.id;});
+    if(ex){ex.qty+=item.qty;if(item.comment)ex.comment=(ex.comment?ex.comment+' / ':'')+item.comment;}
+    else confirmedOrders.push(Object.assign({},item));
+  });
+  cart={};
+  updateCartBar();
+  renderMenu(MENU.categories[0].id);
+  goTo('confirm');
+}
+
+function renderBill(){
+  var all=[];
+  confirmedOrders.forEach(function(i){all.push(Object.assign({},i));});
+  Object.values(cart).filter(function(i){return i.qty>0;}).forEach(function(i){
+    var ex=all.find(function(a){return a.id===i.id;});
+    if(ex)ex.qty+=i.qty; else all.push(Object.assign({},i));
+  });
+  apiPost('/api/notificaciones',{resto:RESTO,mesa:tableNum(),tipo:'cuenta'});
+  document.getElementById('bill-table').textContent=tableNum();
+  var el=document.getElementById('bill-items');
+  if(all.length===0){
+    el.innerHTML='<div class="acc-row" style="color:#ccc;font-style:italic">Sin consumo registrado</div>';
+  } else {
+    var total=all.reduce(function(s,i){return s+i.price*i.qty;},0);
+    el.innerHTML=all.map(function(i){
+      return'<div class="acc-row"><span>'+i.qty+'× '+i.name+'</span><span>'+fmt(i.price*i.qty)+'</span></div>';
+    }).join('')+'<div class="acc-row total"><span>Total</span><span>'+fmt(total)+'</span></div>';
+  }
+}
+
+var screens=['menu','order','confirm','staff','bill'];
+function goTo(name){
+  if(name!=='menu'&&name!=='order'&&name!=='confirm')prevScreen=getCurrentScreen();
+  if(name==='order')renderOrder();
+  if(name==='bill')renderBill();
+  if(name==='staff'){showToast('Notificación enviada al personal');apiPost('/api/notificaciones',{resto:RESTO,mesa:tableNum(),tipo:'personal'});}
+  screens.forEach(function(s){document.getElementById('sc-'+s).classList.toggle('active',s===name);});
+  window.scrollTo(0,0);
+}
+
+function getCurrentScreen(){
+  var cur='menu';
+  screens.forEach(function(s){if(document.getElementById('sc-'+s).classList.contains('active'))cur=s;});
+  return cur;
+}
+function goBack(){goTo(prevScreen||'menu');}
+
+function resetApp(){
+  cart={};confirmedOrders=[];
+  document.querySelectorAll('.tab').forEach(function(t,i){t.classList.toggle('active',i===0);});
+  renderMenu(MENU.categories[0].id);
+  updateCartBar();goTo('menu');
+}
+</script>
+</body>
+</html>
