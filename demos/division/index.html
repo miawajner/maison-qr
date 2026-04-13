@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"/>
+<title>División — Mesa</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;-webkit-tap-highlight-color:transparent}
+body{background:#f0efeb;display:flex;justify-content:center;padding:20px 12px;min-height:100vh}
+.phone{width:320px;border:1.5px solid #ccc;border-radius:36px;overflow:hidden;background:#fff;align-self:flex-start}
+.sbar{background:#f5f5f3;padding:9px 20px 6px;display:flex;justify-content:space-between;font-size:11px;color:#aaa}
+.screen{display:none;flex-direction:column;min-height:600px}
+.screen.active{display:flex}
+
+/* ── Headers ── */
+.hdr{padding:16px 20px 14px;border-bottom:0.5px solid #f0f0f0;text-align:center;flex-shrink:0}
+.hdr-name{font-size:16px;font-weight:500;color:#1a1a1a}
+.hdr-sub{font-size:11px;color:#aaa;margin-top:2px}
+
+/* ── Join screen ── */
+.join-hero{padding:24px 20px 16px;text-align:center}
+.mesa-badge{display:inline-block;background:#f0efeb;border:0.5px solid #e0e0e0;border-radius:20px;padding:5px 16px;font-size:12px;color:#888;margin-bottom:16px}
+.join-title{font-size:18px;font-weight:500;color:#1a1a1a;margin-bottom:6px}
+.join-sub{font-size:12px;color:#aaa;line-height:1.5}
+.qr-box{width:120px;height:120px;background:#f5f5f3;border:0.5px solid #e0e0e0;border-radius:10px;margin:16px auto;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:4px}
+.qr-grid{display:grid;grid-template-columns:repeat(7,12px);gap:2px}
+.qr-cell{width:12px;height:12px;background:#1a1a1a;border-radius:1px}
+.qr-cell.w{background:#f5f5f3}
+.join-or{display:flex;align-items:center;gap:10px;padding:0 20px;margin:4px 0}
+.join-or span{font-size:11px;color:#ccc}
+.join-or::before,.join-or::after{content:"";flex:1;height:0.5px;background:#eee}
+.name-row{display:flex;gap:8px;padding:0 20px 12px}
+.name-input{flex:1;padding:10px 12px;border:0.5px solid #e0e0e0;border-radius:10px;font-size:14px;color:#1a1a1a;outline:none}
+.name-input:focus{border-color:#1a1a1a}
+.btn-join{padding:10px 16px;border:none;border-radius:10px;background:#1a1a1a;color:#fff;font-size:13px;font-weight:500;cursor:pointer;white-space:nowrap}
+
+/* ── People at table ── */
+.at-table{padding:12px 20px;border-bottom:0.5px solid #f0f0f0;flex-shrink:0}
+.at-label{font-size:10px;color:#bbb;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px}
+.at-people{display:flex;gap:6px;flex-wrap:wrap}
+.person-pill{display:flex;align-items:center;gap:5px;padding:5px 10px 5px 8px;border-radius:20px;border:0.5px solid #e8e8e8;font-size:12px;color:#1a1a1a;background:#fff}
+.person-avatar{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;color:#fff;font-weight:600;flex-shrink:0}
+.person-remove{font-size:14px;color:#ccc;cursor:pointer;margin-left:2px;line-height:1}
+.add-person-btn{padding:5px 12px;border-radius:20px;border:0.5px dashed #ddd;font-size:12px;color:#bbb;background:transparent;cursor:pointer}
+
+/* ── Split mode selector ── */
+.mode-select{display:flex;gap:0;margin:12px 20px;border:0.5px solid #e0e0e0;border-radius:10px;overflow:hidden}
+.mode-btn{flex:1;padding:9px 4px;font-size:12px;text-align:center;cursor:pointer;color:#aaa;background:#fff;border:none;transition:all .15s}
+.mode-btn.active{background:#1a1a1a;color:#fff;font-weight:500}
+
+/* ── Items list ── */
+.items-scroll{flex:1;overflow-y:auto}
+.item-row{padding:11px 20px;border-bottom:0.5px solid #f5f5f5}
+.item-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:7px}
+.item-name{font-size:13px;font-weight:500;color:#1a1a1a}
+.item-price{font-size:12px;color:#aaa}
+.item-assignees{display:flex;gap:5px;flex-wrap:wrap}
+.ab{padding:3px 9px;border-radius:20px;border:0.5px solid #e8e8e8;font-size:11px;cursor:pointer;color:#bbb;background:#fff;transition:all .12s}
+.ab.on{color:#fff;font-weight:500;border-color:transparent}
+.shared-note{font-size:10px;color:#bbb;margin-top:4px;font-style:italic}
+
+/* Equal split rows */
+.equal-row{display:flex;justify-content:space-between;align-items:center;padding:10px 20px;border-bottom:0.5px solid #f5f5f5;font-size:13px}
+.equal-name{display:flex;align-items:center;gap:8px;color:#1a1a1a}
+.equal-amt{font-weight:500;color:#1a1a1a}
+
+/* ── Summary bar ── */
+.sum-bar{padding:12px 20px;border-top:0.5px solid #eee;background:#fafafa;flex-shrink:0}
+.sum-row{display:flex;justify-content:space-between;font-size:12px;color:#aaa;padding:2px 0}
+.sum-row.main{font-size:15px;font-weight:500;color:#1a1a1a;padding-top:7px;margin-top:5px;border-top:0.5px solid #eee}
+.warn{font-size:10px;color:#d97706;margin-top:4px}
+
+/* ── Breakdown ── */
+.breakdown{flex:1;overflow-y:auto}
+.p-section{padding:12px 20px;border-bottom:0.5px solid #f5f5f5}
+.p-hdr{display:flex;justify-content:space-between;margin-bottom:6px;align-items:center}
+.p-name{font-size:13px;font-weight:500;color:#1a1a1a;display:flex;align-items:center;gap:6px}
+.p-dot{width:9px;height:9px;border-radius:50%}
+.p-total{font-size:14px;font-weight:500;color:#1a1a1a}
+.p-item{display:flex;justify-content:space-between;font-size:12px;color:#888;padding:2px 0}
+.shared-tag{font-size:10px;color:#ccc;font-style:italic;margin-left:3px}
+
+/* ── Pay ── */
+.pend-bar{padding:9px 20px;display:flex;justify-content:space-between;font-size:12px;flex-shrink:0}
+.pend-bar.pending{background:#fef3c7;color:#d97706}
+.pend-bar.done{background:#dcfce7;color:#16a34a}
+.pay-wrap{flex:1;overflow-y:auto;padding:12px 20px}
+.pay-card{background:#f8f8f8;border-radius:12px;padding:13px 16px;margin-bottom:10px}
+.pay-pname{font-size:12px;color:#888;margin-bottom:2px}
+.pay-amt{font-size:20px;font-weight:500;color:#1a1a1a;margin-bottom:8px}
+.pay-methods{display:flex;gap:5px}
+.pm{flex:1;padding:7px 2px;border:0.5px solid #e0e0e0;border-radius:8px;font-size:10px;text-align:center;cursor:pointer;color:#888;background:#fff}
+.pm.paid{background:#dcfce7;border-color:#86efac;color:#16a34a;font-weight:500}
+
+/* ── Dots & CTA ── */
+.dots{display:flex;gap:5px;justify-content:center;padding:8px 0 4px;flex-shrink:0}
+.dot{width:5px;height:5px;border-radius:50%;background:#eee}
+.dot.on{background:#1a1a1a}
+.cta{padding:0 20px 20px;flex-shrink:0}
+.btn{width:100%;padding:13px;border:none;border-radius:12px;background:#1a1a1a;color:#fff;font-size:14px;font-weight:500;cursor:pointer}
+.btn-g{width:100%;padding:10px;border:0.5px solid #eee;border-radius:12px;background:#fff;color:#aaa;font-size:13px;cursor:pointer;margin-top:7px}
+</style>
+</head>
+<body>
+<div class="phone">
+<div class="sbar"><span>9:41</span><span>●●●</span></div>
+
+<!-- ══ SCREEN 0: JOIN ══ -->
+<div class="screen active" id="sc-join">
+  <div class="join-hero">
+    <div class="mesa-badge">Maison Noire · Mesa 7</div>
+    <div class="join-title">¿Cómo querés unirte?</div>
+    <div class="join-sub">Compartí el QR con tu mesa o<br>agregá personas manualmente</div>
+    <div class="qr-box">
+      <svg width="90" height="90" viewBox="0 0 90 90">
+        <rect x="5" y="5" width="30" height="30" rx="3" fill="none" stroke="#1a1a1a" stroke-width="3"/>
+        <rect x="12" y="12" width="16" height="16" rx="1" fill="#1a1a1a"/>
+        <rect x="55" y="5" width="30" height="30" rx="3" fill="none" stroke="#1a1a1a" stroke-width="3"/>
+        <rect x="62" y="12" width="16" height="16" rx="1" fill="#1a1a1a"/>
+        <rect x="5" y="55" width="30" height="30" rx="3" fill="none" stroke="#1a1a1a" stroke-width="3"/>
+        <rect x="12" y="62" width="16" height="16" rx="1" fill="#1a1a1a"/>
+        <rect x="42" y="42" width="6" height="6" fill="#1a1a1a"/>
+        <rect x="52" y="42" width="6" height="6" fill="#1a1a1a"/>
+        <rect x="62" y="42" width="6" height="6" fill="#1a1a1a"/>
+        <rect x="72" y="42" width="6" height="6" fill="#1a1a1a"/>
+        <rect x="42" y="52" width="6" height="6" fill="#1a1a1a"/>
+        <rect x="62" y="52" width="6" height="6" fill="#1a1a1a"/>
+        <rect x="42" y="62" width="6" height="6" fill="#1a1a1a"/>
+        <rect x="52" y="62" width="6" height="6" fill="#1a1a1a"/>
+        <rect x="72" y="62" width="6" height="6" fill="#1a1a1a"/>
+        <rect x="42" y="72" width="6" height="6" fill="#1a1a1a"/>
+        <rect x="62" y="72" width="6" height="6" fill="#1a1a1a"/>
+        <rect x="72" y="72" width="6" height="6" fill="#1a1a1a"/>
+      </svg>
+      <div style="font-size:10px;color:#bbb;margin-top:2px">Compartí con tu mesa</div>
+    </div>
+  </div>
+  <div class="join-or"><span>o agregá manualmente</span></div>
+  <div class="name-row" style="margin-top:12px">
+    <input class="name-input" id="name-input" type="text" placeholder="Nombre de la persona" maxlength="14"/>
+    <button class="btn-join" onclick="addPerson()">Agregar</button>
+  </div>
+  <div style="padding:0 20px 4px">
+    <div class="at-label">En la mesa ahora</div>
+    <div class="at-people" id="join-people"></div>
+  </div>
+  <div style="flex:1"></div>
+  <div class="dots"><div class="dot on"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+  <div class="cta">
+    <button class="btn" onclick="goTo('split')">Ir a dividir la cuenta</button>
+  </div>
+</div>
+
+<!-- ══ SCREEN: SPLIT ══ -->
+<div class="screen" id="sc-split">
+  <div class="hdr">
+    <div class="hdr-name">Maison Noire · Mesa 7</div>
+    <div class="hdr-sub" id="split-sub">Elegí cómo dividir</div>
+  </div>
+  <div class="mode-select">
+    <button class="mode-btn active" id="mode-item" onclick="setMode('item',this)">Por ítem</button>
+    <button class="mode-btn" id="mode-equal" onclick="setMode('equal',this)">Partes iguales</button>
+  </div>
+  <div id="view-item" class="items-scroll"></div>
+  <div id="view-equal" style="display:none;flex:1;overflow-y:auto"></div>
+  <div class="sum-bar">
+    <div class="sum-row"><span>Total mesa</span><span id="s-total">$0</span></div>
+    <div class="sum-row main"><span id="s-label">Tu parte</span><span id="s-my">$0</span></div>
+    <div class="warn" id="s-warn" style="display:none">Hay platos sin asignar</div>
+  </div>
+  <div class="dots"><div class="dot"></div><div class="dot on"></div><div class="dot"></div><div class="dot"></div></div>
+  <div class="cta">
+    <button class="btn" onclick="goTo('breakdown')">Ver resumen por persona</button>
+    <button class="btn-g" onclick="goTo('join')">← Volver</button>
+  </div>
+</div>
+
+<!-- ══ SCREEN: BREAKDOWN ══ -->
+<div class="screen" id="sc-breakdown">
+  <div class="hdr">
+    <div class="hdr-name">Resumen</div>
+    <div class="hdr-sub">Lo que le corresponde a cada uno</div>
+  </div>
+  <div class="breakdown" id="breakdown"></div>
+  <div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot on"></div><div class="dot"></div></div>
+  <div class="cta">
+    <button class="btn" onclick="goTo('pay')">Proceder al pago</button>
+    <button class="btn-g" onclick="goTo('split')">← Ajustar</button>
+  </div>
+</div>
+
+<!-- ══ SCREEN: PAY ══ -->
+<div class="screen" id="sc-pay">
+  <div class="hdr">
+    <div class="hdr-name">Cada uno paga lo suyo</div>
+    <div class="hdr-sub">Independientemente, cuando quiera</div>
+  </div>
+  <div class="pend-bar pending" id="pend-bar">
+    <span id="pend-label">Pendiente</span>
+    <span id="pend-amt">—</span>
+  </div>
+  <div class="pay-wrap" id="pay-wrap"></div>
+  <div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot on"></div></div>
+  <div class="cta">
+    <button class="btn-g" onclick="goTo('join')">Reiniciar demo</button>
+  </div>
+</div>
+
+</div>
+
+<script>
+var COLORS=["#2563eb","#16a34a","#dc2626","#9333ea","#d97706","#0891b2"];
+var ITEMS=[
+  {n:"Burrata & tomate",p:890},
+  {n:"Tataki de atún",p:1050},
+  {n:"Pato confitado",p:1850},
+  {n:"Sea bass",p:1750},
+  {n:"Lomo wagyu",p:2900},
+  {n:"Risotto de hongos",p:1320},
+  {n:"Champagne ×2",p:2400},
+  {n:"Negroni ×2",p:1160},
+  {n:"Crème brûlée",p:620},
+  {n:"Fondant",p:680},
+];
+
+var people=[
+  {name:"Yo"},
+  {name:"Ana"},
+  {name:"Carlos"},
+  {name:"Sofía"},
+];
+var A=ITEMS.map(function(){return new Set();});
+var mode="item";
+var paid={};
+
+// defaults
+A[0].add(0);A[0].add(1);
+A[1].add(2);
+A[2].add(0);
+A[3].add(1);
+A[4].add(3);
+A[5].add(2);A[5].add(3);
+A[6].add(0);A[6].add(1);A[6].add(2);A[6].add(3);
+A[7].add(0);A[7].add(3);
+A[8].add(1);
+A[9].add(2);A[9].add(3);
+
+function fmt(n){return"$"+Math.round(n).toLocaleString("es-UY");}
+function color(i){return COLORS[i%COLORS.length];}
+function grandTotal(){return ITEMS.reduce(function(s,i){return s+i.p;},0);}
+function ptotal(pi){
+  if(mode==="equal") return grandTotal()/people.length;
+  return ITEMS.reduce(function(s,item,i){return A[i].has(pi)?s+item.p/A[i].size:s;},0);
+}
+
+function addPerson(){
+  var inp=document.getElementById("name-input");
+  var name=inp.value.trim();
+  if(!name||people.length>=6)return;
+  people.push({name:name});
+  A.forEach(function(){});// just keep assignments
+  inp.value="";
+  renderJoinPeople();
+}
+
+function removePerson(pi){
+  if(pi===0)return;// can't remove self
+  A.forEach(function(s){s.delete(pi);
+    // shift indices above pi
+    var newS=new Set();
+    s.forEach(function(v){newS.add(v>pi?v-1:v);});
+    s.clear();newS.forEach(function(v){s.add(v);});
+  });
+  people.splice(pi,1);
+  renderJoinPeople();
+}
+
+function renderJoinPeople(){
+  var wrap=document.getElementById("join-people");
+  wrap.innerHTML="";
+  people.forEach(function(p,pi){
+    var pill=document.createElement("div");
+    pill.className="person-pill";
+    pill.innerHTML='<div class="person-avatar" style="background:'+color(pi)+'">'+p.name[0].toUpperCase()+'</div>'+p.name+(pi>0?'<span class="person-remove" data-pi="'+pi+'">×</span>':'');
+    if(pi>0) pill.querySelector(".person-remove").addEventListener("click",function(){removePerson(parseInt(this.dataset.pi));});
+    wrap.appendChild(pill);
+  });
+}
+
+function setMode(m, el){
+  mode=m;
+  document.querySelectorAll(".mode-btn").forEach(function(b){b.classList.remove("active");});
+  el.classList.add("active");
+  document.getElementById("view-item").style.display=m==="item"?"block":"none";
+  document.getElementById("view-equal").style.display=m==="equal"?"block":"none";
+  if(m==="item") renderItems();
+  else renderEqual();
+  renderSummary();
+}
+
+function renderItems(){
+  var list=document.getElementById("view-item");
+  list.innerHTML="";
+  ITEMS.forEach(function(item,i){
+    var div=document.createElement("div");
+    div.className="item-row";
+    var btns=people.map(function(p,pi){
+      return'<button class="ab'+(A[i].has(pi)?" on":"")+'" data-p="'+pi+'" data-i="'+i+'" style="'+(A[i].has(pi)?"background:"+color(pi)+";":"")+'">'+p.name+'</button>';
+    }).join("");
+    var note=A[i].size>1?'<div class="shared-note">Compartido · '+fmt(item.p/A[i].size)+' c/u</div>':"";
+    div.innerHTML='<div class="item-top"><span class="item-name">'+item.n+'</span><span class="item-price">'+fmt(item.p)+'</span></div><div class="item-assignees">'+btns+'</div>'+note;
+    div.querySelectorAll(".ab").forEach(function(btn){
+      btn.addEventListener("click",function(){
+        var ii=parseInt(this.dataset.i),pi=parseInt(this.dataset.p);
+        if(A[ii].has(pi))A[ii].delete(pi);else A[ii].add(pi);
+        renderItems();renderSummary();
+      });
+    });
+    list.appendChild(div);
+  });
+}
+
+function renderEqual(){
+  var view=document.getElementById("view-equal");
+  var perPerson=grandTotal()/people.length;
+  view.innerHTML='<div style="padding:12px 20px 6px;font-size:11px;color:#bbb;letter-spacing:.5px;text-transform:uppercase">Cada persona paga</div>'+
+    people.map(function(p,pi){
+      return'<div class="equal-row">'+
+        '<div class="equal-name"><div class="person-avatar" style="background:'+color(pi)+';width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;color:#fff;font-weight:600">'+p.name[0].toUpperCase()+'</div>'+p.name+'</div>'+
+        '<div class="equal-amt">'+fmt(perPerson)+'</div>'+
+      '</div>';
+    }).join("")+
+    '<div style="padding:12px 20px;font-size:11px;color:#bbb;border-top:0.5px solid #f5f5f5;margin-top:4px">Total mesa: '+fmt(grandTotal())+'</div>';
+}
+
+function renderSummary(){
+  var gt=grandTotal();
+  var my=ptotal(0);
+  document.getElementById("s-total").textContent=fmt(gt);
+  document.getElementById("s-my").textContent=fmt(my);
+  document.getElementById("s-label").textContent=mode==="equal"?"Cada uno":"Tu parte";
+  var unassigned=mode==="item"&&ITEMS.some(function(_,i){return A[i].size===0;});
+  document.getElementById("s-warn").style.display=unassigned?"block":"none";
+}
+
+function renderBreakdown(){
+  var bd=document.getElementById("breakdown");
+  bd.innerHTML="";
+  people.forEach(function(p,pi){
+    var tot=ptotal(pi);
+    var sec=document.createElement("div");
+    sec.className="p-section";
+    var itemsHtml="";
+    if(mode==="item"){
+      itemsHtml=ITEMS.map(function(item,i){
+        if(!A[i].has(pi))return"";
+        var shared=A[i].size>1;
+        return'<div class="p-item"><span>'+item.n+(shared?'<span class="shared-tag">compartido</span>':'')+'</span><span>'+fmt(item.p/A[i].size)+'</span></div>';
+      }).join("");
+    }else{
+      itemsHtml='<div class="p-item"><span>'+people.length+' personas, partes iguales</span><span>'+fmt(tot)+'</span></div>';
+    }
+    sec.innerHTML='<div class="p-hdr"><div class="p-name"><div class="p-dot" style="background:'+color(pi)+'"></div>'+p.name+'</div><div class="p-total">'+fmt(tot)+'</div></div><div>'+itemsHtml+'</div>';
+    bd.appendChild(sec);
+  });
+}
+
+function renderPay(){
+  var wrap=document.getElementById("pay-wrap");
+  wrap.innerHTML="";
+  people.forEach(function(p,pi){
+    var tot=ptotal(pi);
+    var div=document.createElement("div");
+    div.className="pay-card";
+    var methods=paid[pi]
+      ?'<div class="pay-methods"><div class="pm paid">✓ Pagó</div></div>'
+      :'<div class="pay-methods">'+["Apple Pay","Tarjeta","MP"].map(function(m){return'<div class="pm" data-pi="'+pi+'">'+m+'</div>';}).join("")+'</div>';
+    div.innerHTML='<div class="pay-pname" style="display:flex;align-items:center;gap:6px"><div style="width:10px;height:10px;border-radius:50%;background:'+color(pi)+'"></div>'+p.name+'</div><div class="pay-amt">'+fmt(tot)+'</div>'+methods;
+    if(!paid[pi]){
+      div.querySelectorAll(".pm").forEach(function(btn){
+        btn.addEventListener("click",function(){
+          paid[parseInt(this.dataset.pi)]=true;
+          updatePending();
+          renderPay();
+        });
+      });
+    }
+    wrap.appendChild(div);
+  });
+  updatePending();
+}
+
+function updatePending(){
+  var pending=people.reduce(function(s,_,pi){return s+(paid[pi]?0:ptotal(pi));},0);
+  var bar=document.getElementById("pend-bar");
+  document.getElementById("pend-amt").textContent=fmt(pending);
+  if(pending===0){
+    bar.className="pend-bar done";
+    document.getElementById("pend-label").textContent="Mesa saldada ✓";
+  }else{
+    bar.className="pend-bar pending";
+    document.getElementById("pend-label").textContent="Pendiente";
+  }
+}
+
+function goTo(name){
+  if(name==="split"){renderItems();renderSummary();}
+  if(name==="breakdown")renderBreakdown();
+  if(name==="pay"){paid={};renderPay();}
+  if(name==="join")renderJoinPeople();
+  document.querySelectorAll(".screen").forEach(function(s){s.classList.remove("active");});
+  document.getElementById("sc-"+name).classList.add("active");
+}
+
+// init
+renderJoinPeople();
+renderItems();
+renderSummary();
+
+// enter key on name input
+document.getElementById("name-input").addEventListener("keydown",function(e){
+  if(e.key==="Enter")addPerson();
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<meta name="theme-color" content="#0f0f0f"/>
+<title>Cocina — Maison Noire</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#0f0f0f;color:#f0f0f0;overflow:hidden}
+#app{display:flex;flex-direction:column;height:100vh}
+
+/* ── Topbar ── */
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid #1f1f1f;flex-shrink:0;background:#0f0f0f}
+.tb-left{display:flex;align-items:center;gap:14px}
+.tb-logo{font-size:14px;font-weight:500;color:#f0f0f0;letter-spacing:.5px}
+.tb-shift{font-size:12px;color:#555;letter-spacing:.3px}
+.live-badge{display:flex;align-items:center;gap:6px;font-size:11px;color:#3ecf8e;background:#0d2e1e;padding:4px 10px;border-radius:20px;border:1px solid #1a4f35}
+.pulse{width:6px;height:6px;border-radius:50%;background:#3ecf8e;animation:pulse 1.5s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.tb-clock{font-size:14px;font-weight:500;color:#f0f0f0;font-variant-numeric:tabular-nums}
+
+/* ── Metrics strip ── */
+.metrics{display:flex;gap:1px;border-bottom:1px solid #1f1f1f;flex-shrink:0;background:#1a1a1a}
+.metric{flex:1;padding:12px 20px;background:#0f0f0f}
+.metric-val{font-size:20px;font-weight:500;color:#f0f0f0}
+.metric-label{font-size:11px;color:#555;margin-top:2px;letter-spacing:.3px}
+.metric.green .metric-val{color:#3ecf8e}
+.metric.amber .metric-val{color:#f0a130}
+
+/* ── Filter tabs ── */
+.filters{display:flex;gap:4px;padding:12px 16px;border-bottom:1px solid #1a1a1a;flex-shrink:0;background:#0f0f0f}
+.filter{padding:5px 14px;font-size:12px;border-radius:20px;cursor:pointer;border:1px solid #2a2a2a;color:#666;background:transparent;transition:all .15s;letter-spacing:.3px}
+.filter.active{background:#f0f0f0;color:#0f0f0f;border-color:#f0f0f0;font-weight:500}
+.filter-count{display:inline-block;background:#333;color:#aaa;font-size:10px;padding:1px 5px;border-radius:10px;margin-left:4px}
+.filter.active .filter-count{background:#0f0f0f;color:#f0f0f0}
+
+/* ── Orders grid ── */
+.grid-wrap{flex:1;overflow-y:auto;padding:12px 16px;display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px;align-content:start}
+.grid-wrap::-webkit-scrollbar{width:4px}
+.grid-wrap::-webkit-scrollbar-track{background:transparent}
+.grid-wrap::-webkit-scrollbar-thumb{background:#333;border-radius:2px}
+
+/* ── Order card ── */
+.card{background:#161616;border:1px solid #242424;border-radius:12px;overflow:hidden;display:flex;flex-direction:column;transition:border-color .2s}
+.card.new{border-color:#2a4a8a;animation:newcard .4s ease}
+@keyframes newcard{0%{transform:scale(.96);opacity:.5}100%{transform:scale(1);opacity:1}}
+.card.warn{border-color:#4a3a00}
+.card.late{border-color:#4a1a1a}
+.card.done{opacity:.4;filter:grayscale(1)}
+
+.card-top{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-bottom:1px solid #1f1f1f}
+.card-mesa{font-size:14px;font-weight:500;color:#f0f0f0}
+.card-badges{display:flex;gap:5px;align-items:center}
+.badge-new{font-size:9px;font-weight:600;background:#1a2a5a;color:#7aabff;padding:2px 6px;border-radius:4px;letter-spacing:.5px;text-transform:uppercase}
+.badge-timer{font-size:11px;font-weight:500;padding:3px 8px;border-radius:20px}
+.badge-timer.ok{background:#0d2e1e;color:#3ecf8e}
+.badge-timer.warn{background:#2e1e00;color:#f0a130}
+.badge-timer.late{background:#2e0a0a;color:#f05a5a}
+
+.card-items{padding:10px 12px;flex:1}
+.card-item{display:flex;align-items:baseline;gap:6px;padding:5px 0;border-bottom:1px solid #1c1c1c;font-size:13px}
+.card-item:last-child{border-bottom:none}
+.item-qty{font-weight:600;color:#f0f0f0;min-width:18px;font-size:14px}
+.item-name{color:#aaa;flex:1;line-height:1.3}
+.item-check{width:18px;height:18px;border-radius:50%;border:1px solid #333;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;transition:all .15s}
+.item-check.checked{background:#3ecf8e;border-color:#3ecf8e}
+.item-check svg{opacity:0;transition:opacity .1s}
+.item-check.checked svg{opacity:1}
+
+.card-note{padding:6px 12px;font-size:11px;color:#666;background:#111;border-top:1px solid #1f1f1f;font-style:italic}
+
+.card-footer{display:flex;gap:6px;padding:10px 12px;border-top:1px solid #1c1c1c}
+.btn-done{flex:1;padding:8px;border:none;border-radius:8px;font-size:12px;font-weight:500;cursor:pointer;transition:all .15s}
+.btn-done.mark{background:#f0f0f0;color:#0f0f0f}
+.btn-done.mark:hover{background:#ddd}
+.btn-done.unmark{background:#1f1f1f;color:#555;border:1px solid #2a2a2a}
+.btn-total{font-size:12px;color:#444;align-self:center;text-align:right;min-width:60px}
+
+/* ── Sidebar ── */
+.sidebar{width:280px;flex-shrink:0;border-left:1px solid #1a1a1a;background:#0a0a0a;display:flex;flex-direction:column;overflow:hidden}
+.main-area{display:flex;flex:1;overflow:hidden}
+
+.sidebar-section{padding:14px 16px;border-bottom:1px solid #1a1a1a;flex-shrink:0}
+.sidebar-title{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:#444;margin-bottom:10px}
+.pay-row{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid #151515;font-size:12px}
+.pay-row:last-child{border-bottom:none}
+.pay-mesa{font-weight:500;color:#f0f0f0;min-width:50px}
+.pay-items{flex:1;color:#555;font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pay-amt{color:#3ecf8e;font-weight:500;min-width:52px;text-align:right}
+.pay-time{color:#333;font-size:10px;min-width:34px;text-align:right}
+
+.sidebar-scroll{flex:1;overflow-y:auto;padding:14px 16px}
+.sidebar-scroll::-webkit-scrollbar{width:3px}
+.sidebar-scroll::-webkit-scrollbar-thumb{background:#222}
+
+.review-row{padding:8px 0;border-bottom:1px solid #151515;font-size:12px}
+.review-row:last-child{border-bottom:none}
+.review-stars{color:#d4a853;font-size:13px;letter-spacing:1px}
+.review-text{color:#555;font-size:11px;margin-top:2px;line-height:1.4}
+.review-meta{font-size:10px;color:#333;margin-top:3px}
+
+/* ── Toast ── */
+.toast-area{position:absolute;top:80px;right:290px;display:flex;flex-direction:column;gap:6px;z-index:100;pointer-events:none}
+.toast{background:#1a2a5a;border:1px solid #2a3a6a;border-radius:8px;padding:10px 14px;font-size:12px;color:#7aabff;animation:toastin .3s ease;pointer-events:auto;max-width:240px}
+@keyframes toastin{from{opacity:0;transform:translateX(10px)}to{opacity:1;transform:translateX(0)}}
+
+/* ── Empty state ── */
+.empty{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;color:#333;gap:8px}
+.empty-icon{font-size:32px;opacity:.3}
+.empty-text{font-size:13px}
+
+/* ── Sound toggle ── */
+.sound-btn{background:transparent;border:1px solid #2a2a2a;border-radius:8px;color:#555;font-size:11px;padding:4px 10px;cursor:pointer;transition:all .15s}
+.sound-btn.on{color:#3ecf8e;border-color:#1a4f35}
+</style>
+</head>
+<body>
+<div id="app">
+
+  <div class="topbar">
+    <div class="tb-left">
+      <div class="tb-logo">Maison Noire</div>
+      <div class="tb-shift" id="shift-label">Turno noche · Viernes</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px">
+      <button class="sound-btn on" id="sound-btn" onclick="toggleSound()">Sonido ON</button>
+      <div class="live-badge"><div class="pulse"></div>En vivo</div>
+      <div class="tb-clock" id="clock">--:--</div>
+    </div>
+  </div>
+
+  <div class="metrics">
+    <div class="metric">
+      <div class="metric-val" id="m-activos">0</div>
+      <div class="metric-label">mesas activas</div>
+    </div>
+    <div class="metric green">
+      <div class="metric-val" id="m-completados">0</div>
+      <div class="metric-label">completados hoy</div>
+    </div>
+    <div class="metric amber">
+      <div class="metric-val" id="m-ventas">$0</div>
+      <div class="metric-label">ventas hoy</div>
+    </div>
+    <div class="metric green">
+      <div class="metric-val" id="m-propinas">$0</div>
+      <div class="metric-label">propinas hoy</div>
+    </div>
+  </div>
+
+  <div class="filters">
+    <button class="filter active" onclick="setFilter('all',this)">Todos <span class="filter-count" id="fc-all">0</span></button>
+    <button class="filter" onclick="setFilter('new',this)">Nuevos <span class="filter-count" id="fc-new">0</span></button>
+    <button class="filter" onclick="setFilter('active',this)">En curso <span class="filter-count" id="fc-active">0</span></button>
+    <button class="filter" onclick="setFilter('late',this)">Demorados <span class="filter-count" id="fc-late">0</span></button>
+    <button class="filter" onclick="setFilter('done',this)">Listos <span class="filter-count" id="fc-done">0</span></button>
+  </div>
+
+  <div class="main-area">
+    <div class="grid-wrap" id="grid"></div>
+
+    <div class="sidebar">
+      <div class="sidebar-section">
+        <div class="sidebar-title">Pagos recientes</div>
+        <div id="pay-list"></div>
+      </div>
+      <div class="sidebar-title" style="padding:14px 16px 0;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:#444">Reseñas hoy</div>
+      <div class="sidebar-scroll" id="review-list"></div>
+      <div style="padding:12px 16px;border-top:1px solid #1a1a1a">
+        <button onclick="addOrder()" style="width:100%;padding:9px;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:8px;color:#666;font-size:12px;cursor:pointer">+ Simular pedido nuevo</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast-area" id="toasts"></div>
+</div>
+
+<script>
+var soundOn = true;
+var currentFilter = 'all';
+var orderCounter = 10;
+var mesaPool = [1,2,3,4,5,6,7,8,9,10,11,12];
+var usedMesas = new Set();
+
+var orders = [
+  {id:1, mesa:3,  items:[{n:'Tataki de atún',q:2,done:false},{n:'Negroni',q:1,done:true}],  total:2680, propina:268, mins:18, isDone:false, isNew:false, note:''},
+  {id:2, mesa:7,  items:[{n:'Pato confitado',q:1,done:false},{n:'Champagne Ruinart',q:2,done:false},{n:'Crème brûlée',q:1,done:false}], total:5870, propina:587, mins:6, isDone:false, isNew:true, note:'Sin lactosa en el postre'},
+  {id:3, mesa:11, items:[{n:'Risotto de hongos',q:3,done:true},{n:'Côtes du Rhône',q:2,done:true}], total:5320, propina:532, mins:31, isDone:true, isNew:false, note:''},
+  {id:4, mesa:2,  items:[{n:'Lomo wagyu 200g',q:2,done:false},{n:'Agua mineral',q:1,done:false}], total:6080, propina:608, mins:4, isDone:false, isNew:false, note:'Punto: jugoso'},
+  {id:5, mesa:9,  items:[{n:'Burrata & tomate',q:1,done:false},{n:'Fondant de chocolate',q:2,done:false}], total:2250, propina:225, mins:12, isDone:false, isNew:false, note:''},
+];
+usedMesas = new Set(orders.map(function(o){return o.mesa;}));
+
+var payments = [
+  {mesa:1, items:'Pato confitado, Champagne ×2', amt:4250, tip:425, method:'Apple Pay', time:'21:14'},
+  {mesa:8, items:'Wagyu ×2, Negroni ×3',         amt:7540, tip:754, method:'Tarjeta',   time:'21:02'},
+  {mesa:4, items:'Risotto ×3, vino ×2',           amt:5320, tip:532, method:'MP',        time:'20:48'},
+];
+
+var reviews = [
+  {stars:5, text:'La mejor experiencia, pagamos en segundos y el pato estaba increíble.', time:'21:18'},
+  {stars:5, text:'Excelente atención, volvemos pronto.', time:'20:55'},
+  {stars:4, text:'Muy rico todo. El sistema de pago súper cómodo.', time:'20:30'},
+];
+
+function timerClass(mins){ return mins<12?'ok':mins<25?'warn':'late'; }
+
+function fmt(n){ return '$'+Math.round(n).toLocaleString('es-UY'); }
+
+function renderGrid(){
+  var grid = document.getElementById('grid');
+  var filtered = orders.filter(function(o){
+    if(currentFilter==='all')   return true;
+    if(currentFilter==='new')   return o.isNew;
+    if(currentFilter==='active')return !o.isDone&&!o.isNew;
+    if(currentFilter==='late')  return !o.isDone&&o.mins>=25;
+    if(currentFilter==='done')  return o.isDone;
+    return true;
+  });
+
+  grid.innerHTML = '';
+
+  if(filtered.length===0){
+    grid.innerHTML='<div class="empty"><div class="empty-icon">✓</div><div class="empty-text">Sin pedidos en esta categoría</div></div>';
+    return;
+  }
+
+  filtered.forEach(function(o){
+    var tc = timerClass(o.mins);
+    var card = document.createElement('div');
+    card.className = 'card'+(o.isNew?' new':'')+(tc==='late'&&!o.isDone?' late':tc==='warn'&&!o.isDone?' warn':'')+(o.isDone?' done':'');
+    card.id = 'card-'+o.id;
+
+    var itemsHtml = o.items.map(function(item,idx){
+      return '<div class="card-item">'+
+        '<span class="item-qty">'+item.q+'×</span>'+
+        '<span class="item-name">'+item.n+'</span>'+
+        '<div class="item-check'+(item.done?' checked':'')+'" data-oid="'+o.id+'" data-idx="'+idx+'">'+
+          '<svg width="10" height="10" viewBox="0 0 10 10" fill="none">'+
+            '<path d="M2 5l2 2 4-4" stroke="#0f0f0f" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>'+
+          '</svg>'+
+        '</div>'+
+      '</div>';
+    }).join('');
+
+    var noteHtml = o.note ? '<div class="card-note">'+o.note+'</div>' : '';
+
+    card.innerHTML =
+      '<div class="card-top">'+
+        '<span class="card-mesa">Mesa '+o.mesa+'</span>'+
+        '<div class="card-badges">'+
+          (o.isNew?'<span class="badge-new">nuevo</span>':'')+
+          (!o.isDone?'<span class="badge-timer '+tc+'">'+o.mins+' min</span>':
+            '<span class="badge-timer ok">listo</span>')+
+        '</div>'+
+      '</div>'+
+      '<div class="card-items">'+itemsHtml+'</div>'+
+      noteHtml+
+      '<div class="card-footer">'+
+        '<button class="btn-done '+(o.isDone?'unmark':'mark')+'" data-id="'+o.id+'">'+
+          (o.isDone?'Reabrir':'Marcar listo')+
+        '</button>'+
+        '<div class="btn-total">'+fmt(o.total)+'</div>'+
+      '</div>';
+
+    card.querySelectorAll('.item-check').forEach(function(el){
+      el.addEventListener('click',function(){
+        var oid=parseInt(this.dataset.oid), idx=parseInt(this.dataset.idx);
+        var ord=orders.find(function(x){return x.id===oid;});
+        ord.items[idx].done=!ord.items[idx].done;
+        renderGrid();
+      });
+    });
+
+    card.querySelector('.btn-done').addEventListener('click',function(){
+      var id=parseInt(this.dataset.id);
+      var ord=orders.find(function(x){return x.id===id;});
+      ord.isDone=!ord.isDone;
+      ord.isNew=false;
+      if(ord.isDone){
+        payments.unshift({
+          mesa:ord.mesa,
+          items:ord.items.map(function(i){return i.q+'× '+i.n;}).join(', '),
+          amt:ord.total, tip:ord.propina,
+          method:['Apple Pay','Tarjeta','MP','Google Pay'][Math.floor(Math.random()*4)],
+          time:new Date().toLocaleTimeString('es-UY',{hour:'2-digit',minute:'2-digit'})
+        });
+        usedMesas.delete(ord.mesa);
+        renderPayments();
+        toast('Mesa '+ord.mesa+' completada · '+fmt(ord.total));
+      }
+      updateMetrics();
+      renderGrid();
+    });
+
+    grid.appendChild(card);
+  });
+}
+
+function renderPayments(){
+  var list=document.getElementById('pay-list');
+  list.innerHTML=payments.slice(0,5).map(function(p){
+    return '<div class="pay-row">'+
+      '<div class="pay-mesa">Mesa '+p.mesa+'</div>'+
+      '<div class="pay-items">'+p.items+'</div>'+
+      '<div class="pay-amt">'+fmt(p.amt)+'</div>'+
+      '<div class="pay-time">'+p.time+'</div>'+
+    '</div>';
+  }).join('');
+}
+
+function renderReviews(){
+  var list=document.getElementById('review-list');
+  list.innerHTML=reviews.map(function(r){
+    return '<div class="review-row">'+
+      '<div class="review-stars">'+'★'.repeat(r.stars)+'☆'.repeat(5-r.stars)+'</div>'+
+      '<div class="review-text">'+r.text+'</div>'+
+      '<div class="review-meta">'+r.time+'</div>'+
+    '</div>';
+  }).join('');
+}
+
+function updateMetrics(){
+  var active=orders.filter(function(o){return !o.isDone;}).length;
+  var done=orders.filter(function(o){return o.isDone;}).length;
+  var ventas=payments.reduce(function(s,p){return s+p.amt;},0);
+  var propinas=payments.reduce(function(s,p){return s+p.tip;},0);
+  document.getElementById('m-activos').textContent=active;
+  document.getElementById('m-completados').textContent=done+payments.length;
+  document.getElementById('m-ventas').textContent=fmt(ventas);
+  document.getElementById('m-propinas').textContent=fmt(propinas);
+
+  var newCount=orders.filter(function(o){return o.isNew;}).length;
+  var lateCount=orders.filter(function(o){return !o.isDone&&o.mins>=25;}).length;
+  var doneCount=orders.filter(function(o){return o.isDone;}).length;
+  var activeCount=orders.filter(function(o){return !o.isDone&&!o.isNew;}).length;
+  document.getElementById('fc-all').textContent=orders.length;
+  document.getElementById('fc-new').textContent=newCount;
+  document.getElementById('fc-active').textContent=activeCount;
+  document.getElementById('fc-late').textContent=lateCount;
+  document.getElementById('fc-done').textContent=doneCount;
+}
+
+function setFilter(f,el){
+  currentFilter=f;
+  document.querySelectorAll('.filter').forEach(function(b){b.classList.remove('active');});
+  el.classList.add('active');
+  renderGrid();
+}
+
+function toast(msg){
+  var area=document.getElementById('toasts');
+  var t=document.createElement('div');
+  t.className='toast';
+  t.textContent=msg;
+  area.appendChild(t);
+  setTimeout(function(){t.style.opacity='0';t.style.transition='opacity .3s';setTimeout(function(){t.remove();},300);},3500);
+}
+
+function addOrder(){
+  var available=mesaPool.filter(function(m){return !usedMesas.has(m);});
+  if(available.length===0){toast('Todas las mesas están ocupadas');return;}
+  var mesa=available[Math.floor(Math.random()*available.length)];
+  usedMesas.add(mesa);
+  var samples=[
+    [{n:'Tataki de atún',q:2,done:false},{n:'Negroni',q:1,done:false}],
+    [{n:'Pato confitado',q:1,done:false},{n:'Champagne Ruinart',q:1,done:false}],
+    [{n:'Lomo wagyu 200g',q:2,done:false},{n:'Côtes du Rhône',q:2,done:false}],
+    [{n:'Risotto de hongos',q:2,done:false},{n:'Crème brûlée',q:2,done:false}],
+    [{n:'Burrata & tomate',q:2,done:false},{n:'Fondant',q:1,done:false},{n:'Negroni',q:2,done:false}],
+  ];
+  var items=samples[Math.floor(Math.random()*samples.length)];
+  var total=Math.round(items.reduce(function(s,i){return s+i.q*1200;},0)*0.9+500);
+  orders.unshift({id:orderCounter++,mesa:mesa,items:items,total:total,propina:Math.round(total*0.1),mins:0,isDone:false,isNew:true,note:''});
+  toast('Nuevo pedido — Mesa '+mesa);
+  updateMetrics();
+  renderGrid();
+}
+
+function toggleSound(){
+  soundOn=!soundOn;
+  var btn=document.getElementById('sound-btn');
+  btn.textContent='Sonido '+(soundOn?'ON':'OFF');
+  btn.classList.toggle('on',soundOn);
+}
+
+function updateClock(){
+  var now=new Date();
+  document.getElementById('clock').textContent=now.toLocaleTimeString('es-UY',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+}
+
+setInterval(function(){
+  orders.forEach(function(o){if(!o.isDone)o.mins++;});
+  updateMetrics();
+  renderGrid();
+},60000);
+
+setInterval(updateClock,1000);
+
+updateClock();
+updateMetrics();
+renderGrid();
+renderPayments();
+renderReviews();
+</script>
+</body>
+</html>
